@@ -10,7 +10,7 @@ from scipy.integrate import quad
 from scipy.optimize import fsolve
 from scipy.special import gamma
 
-plt.rcParams['figure.dpi'] = 150
+plt.rcParams['figure.dpi'] = 200
 
 #IC based on RK results give (ϵ, n) = (1, 0)
 E0 = 1.1563
@@ -160,37 +160,33 @@ def brute_force(func, E, ϵ):
 # plt.xlabel("ϵ")
 # plt.ylabel("E")
 # plt.show()
+
 ##########################TEST#######################################
 
 ##########################TEST#######################################
-## in which direction does the NH part of the potential spin around the complex plane with increasing ϵ?
-
-def spinning_around(ϵ):
+def whats_up_with_integrand3(x_values, E, ϵ):
     # checking the direction of rotation of the non-Hermitian part of the potential
-    # for some arbitrary x
-    x = 1
+    # for some x values using the change of variables from my integrand() function
+
+    α = 3/2 - 1/(ϵ +2)
+    offset = - 1j * np.sin(np.pi * (3/2 - 1/(ϵ +2)))
+
     complex_numbers = []
-    for epsilon in ϵ:
-        NH_V = (np.exp(1j * np.pi / 2) * x)**ϵ
-        real_part = np.real(NH_V)
-        imag_part = np.imag(NH_V)
-        complex_num = real_part[0] + 1j*imag_part[0]
+    for x_prime in x_values:
+        x = x_prime - offset
+        complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
         complex_numbers.append(complex_num)
-        
-        plt.plot(real_part,imag_part,'o-')#,label=f'{complex_num}')
 
-    # plt.legend()
-    ax = plt.gca()
-    ax.set_aspect(aspect=1)
-    plt.axhline(0)
-    plt.axvline(0)
-    plt.ylabel('Imaginary')
-    plt.xlabel('Real')
+    plt.plot(x_values, np.real(complex_numbers), label="real part")
+    plt.plot(x_values, np.imag(complex_numbers), label="imaginary part")
+
+    plt.legend()
+    plt.ylabel(r'$\sqrt{E - x^2 (i x)^\epsilon}$')
+    plt.xlabel('x')
+    plt.title("Change of variables")
     plt.show()
-    return complex_numbers
 
-# x_values = np.linspace(0, 3, 30)
-ϵ = np.linspace(-0.5, 3, 30)
-spinning_around(ϵ)
+x_values = np.linspace(-10, 10, 10000)
+ϵ = 1
+whats_up_with_integrand3(x_values, E0, ϵ)
 ##########################TEST#######################################
-
