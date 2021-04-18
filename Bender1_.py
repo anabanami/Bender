@@ -164,29 +164,59 @@ def brute_force(func, E, ϵ):
 ##########################TEST#######################################
 
 ##########################TEST#######################################
-def whats_up_with_integrand3(x_values, E, ϵ):
+def whats_up_with_integrand(x_values, E, ϵ):
     # checking the direction of rotation of the non-Hermitian part of the potential
-    # for some x values using the change of variables from my integrand() function
-
+    # for some x values
     α = 3/2 - 1/(ϵ +2)
     offset = - 1j * np.sin(np.pi * (3/2 - 1/(ϵ +2)))
 
-    complex_numbers = []
+    reals = []
+    imaginary = []
     for x_prime in x_values:
         x = x_prime - offset
         complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
-        complex_numbers.append(complex_num)
+        reals.append(np.real(complex_num))
+        imaginary.append(np.imag(complex_num))
 
-    plt.plot(x_values, np.real(complex_numbers), label="real part")
-    plt.plot(x_values, np.imag(complex_numbers), label="imaginary part")
-
+    plt.plot(reals, imaginary, '-')
+    plt.plot(reals[0], imaginary[0],'go', label='start here')
+    plt.plot(reals[-1], imaginary[-1],'ro', label='finish here')
     plt.legend()
-    plt.ylabel(r'$\sqrt{E - x^2 (i x)^\epsilon}$')
-    plt.xlabel('x')
-    plt.title("Change of variables")
+    plt.ylabel(r'$Im(\sqrt{E - x^2 (i x)^\epsilon})$')
+    plt.xlabel(r'$Re(\sqrt{E - x^2 (i x)^\epsilon})$')
+
+    plt.title("change or variables WKB")
     plt.show()
 
-x_values = np.linspace(-10, 10, 10000)
+x_values = np.linspace(-10, 10, 1000)
+# ϵ = np.linspace(-0.5, 3, 30)
 ϵ = 1
-whats_up_with_integrand3(x_values, E0, ϵ)
-##########################TEST#######################################
+whats_up_with_integrand(x_values, E0, ϵ)
+
+##########################TEST######################################
+# def whats_up_with_integrand3(x_values, E, ϵ):
+#     # checking the direction of rotation of the non-Hermitian part of the potential
+#     # for some x values using the change of variables from my integrand() function
+
+#     α = 3/2 - 1/(ϵ +2)
+#     offset = - 1j * np.sin(np.pi * (3/2 - 1/(ϵ +2)))
+
+#     complex_numbers = []
+#     for x_prime in x_values:
+#         x = x_prime - offset
+#         complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
+#         complex_numbers.append(complex_num)
+
+#     plt.plot(x_values, np.real(complex_numbers), label="real part")
+#     plt.plot(x_values, np.imag(complex_numbers), label="imaginary part")
+
+#     plt.legend()
+#     plt.ylabel(r'$\sqrt{E - x^2 (i x)^\epsilon}$')
+#     plt.xlabel('x')
+#     plt.title("Change of variables")
+#     plt.show()
+
+# x_values = np.linspace(-10, 10, 10000)
+# ϵ = -1
+# whats_up_with_integrand3(x_values, E0, ϵ)
+# ##########################TEST#######################################
