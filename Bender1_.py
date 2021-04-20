@@ -12,10 +12,6 @@ from scipy.special import gamma
 
 plt.rcParams['figure.dpi'] = 200
 
-#IC based on RK results give (ϵ, n) = (1, 0)
-E0 = 1.1563
-
-
 def complex_quad(func, a, b, **kwargs):
     # Integration using scipy.integratequad() for a complex function
     def real_func(*args):
@@ -42,24 +38,25 @@ def complex_fsolve(func, E0, **kwargs):
     # print(f"E = {Energies[0]:.04f}")
     return real_root[0]
 
-def integrand(x_prime, E, ϵ):
-    # Change of variables
-    α = 3/2 - 1/(ϵ +2)
-    offset = - E**(1/(ϵ+2)) * 1j * np.sin(np.pi * α)
-    x = x_prime - offset
+def integrand(x_prime, tp_minus, E, ϵ): 
+    # Change of variables integrand
+    x = x_prime + 1j * np.imag(tp_minus)
     return np.sqrt(E - x**2 * (1j * x)**ϵ)
-
-def RHS(E, ϵ):
-    # Integral defining E
-    # offset = - 1j * np.sin(np.pi * (3/2 - 1/(ϵ +2)))
-    # Change of variables for integration LIMITS
-    tp_minus_prime = E**(1/(ϵ+2)) * np.cos(np.pi * (3/2 - (1/(ϵ+2))))
-    tp_plus_prime = E**(1/(ϵ+2)) * np.cos(np.pi * (1/2 - (1/(ϵ+2))))
-    return complex_quad(integrand, tp_minus_prime, tp_plus_prime, args=(E, ϵ))
 
 def LHS(n):
     # Quantization condition
-    return (n +1/2) * np.pi
+    return (n + 1/2) * np.pi
+
+def RHS(E, ϵ): #***********************************************************************************
+    # Integral defining E
+    # integration LIMITS
+    tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
+    tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
+    tp_minus_prime = np.real(E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus))
+    tp_plus_prime = np.real(E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)) 
+    # print(tp_minus_prime)
+    # print(tp_plus_prime)
+    return complex_quad(integrand, tp_minus_prime, tp_plus_prime, args=(tp_minus, E, ϵ))
 
 def error(E, ϵ, n):
     return RHS(E, ϵ) - LHS(n)
@@ -85,13 +82,73 @@ def brute_force(func, E, ϵ):
     # BRUTE INTEGRAL
     def real_func(*args):
         return np.real(func(*args))
-    # limits
-    tp_minus_prime = E**(1/(ϵ+2)) * np.cos(np.pi * (3/2 - (1/(ϵ+2))))
-    tp_plus_prime = E**(1/(ϵ+2)) * np.cos(np.pi * (1/2 - (1/(ϵ+2))))
+    tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
+    tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
+    tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus) #is this + or -?
+    tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus) 
     # domain & differential (infinitesimal)
     x_prime = np.linspace(tp_minus_prime, tp_plus_prime, 50000)
     dx_prime = x_prime[1] - x_prime[0]
     return np.sum(real_func(x_prime, E, ϵ) * dx_prime)
+
+
+#######################################function calls########################################################
+
+#IC based on RK results give (ϵ, n) = (1, 0)
+# ϵ = 1
+E0 = 1.1563
+# E = E0
+
+ϵ = 2
+E = 60.185767651 
+
+tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
+tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
+tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
+tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
+
+########################## TEST 2 #######################################
+# ITERATIVE approach 1 for ϵ = 1
+Energies_1 = []
+for n in range(10):
+  E = complex_fsolve(error, E0, args=(1, n))
+  Energies_1.append(E)
+
+# comparison to WKB and RK reported in Bender 
+n = range(10)
+E_RK= [1.1563, 4.1093, 7.5623, 11.3144, 15.2916, 19.4515, 23.7667, 28.2175, 32.7891, 37.4698]
+E_WKB = [1.0943, 4.0895, 7.5489, 11.3043, 15.2832, 19.4444, 23.7603, 28.2120, 32.7841, 37.4653]
+plt.plot(n, Energies_1 , label="my calculated energies")
+plt.plot(n, E_RK , label=r"$E_{RK}$")
+plt.plot(n, E_WKB , label=r"$E_{WKB}$")
+plt.legend()
+plt.xlabel("n")
+plt.ylabel("E")
+plt.show()
+
+# ITERATIVE approach 2
+Energies_2 = []
+for n in range(10):
+    E_s = []
+    for ϵ in np.linspace(0, 3, 30):
+        E = complex_fsolve(error, E0, args=(ϵ, n))
+        E_s.append(E)
+        # print(f" {ϵ = }, {n = }, {E = }")
+    Energies_2.append(E_s)
+# print(Energies_2)
+
+#PLOTING ITERATIVE approach 1
+for E_ϵs in Energies_2:
+    # print(E_ϵs)
+    ϵ = np.linspace(0, 3, 30)
+    plt.plot(ϵ, E_ϵs, "o-", markersize=2)
+# plt.legend()
+plt.ylim(0, 20)
+plt.xlabel("ϵ")
+plt.ylabel("E")
+plt.show()
+
+########################## TEST 2 #######################################
 
 ##########################TEST#######################################
 # # FIND ENERGIES TO FEED INTO BRUTE INTEGRAL
@@ -163,71 +220,34 @@ def brute_force(func, E, ϵ):
 
 ##########################TEST#######################################
 
-
-
-##########################TEST#######################################
-def whats_up_with_integrand(x_values, E, ϵ):
-    # checking the direction of rotation of the non-Hermitian part of the potential
-    # for some x values
-    α = 3/2 - 1/(ϵ +2)
-    offset = - E**(1/(ϵ+2)) * 1j * np.sin(np.pi * α)
-    # β = 1/2 - 1/(ϵ +2)
-    # offset = + E**(1/(ϵ+2)) * 1j * np.sin(np.pi * β)
-
-    reals = []
-    imaginary = []
-    for x_prime in x_values:
-        x = x_prime - offset
-        complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
-        reals.append(np.real(complex_num))
-        imaginary.append(np.imag(complex_num))
-
-    plt.plot(reals, imaginary, '-')
-    plt.plot(reals[0], imaginary[0],'go', label='start here')
-    plt.plot(reals[-1], imaginary[-1],'ro', label='finish here')
-    plt.legend()
-    plt.ylabel(r'$Im(\sqrt{E - x^2 (i x)^\epsilon})$')
-    plt.xlabel(r'$Re(\sqrt{E - x^2 (i x)^\epsilon})$')
-
-    plt.title("change or variables WKB")
-    plt.show()
-
-
-x_values = np.linspace(-10, 10, 10000)
-#IC based on RK results give (ϵ, n) = (1, 0)
-# ϵ = 1
-# E0 = 1.1563
-
-ϵ = 2
-n = 8
-E = 60.185767651 
-
-whats_up_with_integrand(x_values, E, ϵ)
-
-##########################TEST######################################
-# def whats_up_with_integrand3(x_values, E, ϵ):
-#     # checking the direction of rotation of the non-Hermitian part of the potential
-#     # for some x values using the change of variables from my integrand() function
-
-#     α = 3/2 - 1/(ϵ +2)
-#     offset = - 1j * np.sin(np.pi * α)
-
-#     complex_numbers = []
-#     for x_prime in x_values:
-#         x = x_prime - offset
+# ######################### TEST 1 #######################################
+# def whats_up_with_integrand(x_values, E, ϵ):
+#     # checking the integration path of the integrand in the x-complex plane
+#     reals = []
+#     imaginary = []
+#     for x in x_values:
 #         complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
-#         complex_numbers.append(complex_num)
 
-#     plt.plot(x_values, np.real(complex_numbers), label="real part")
-#     plt.plot(x_values, np.imag(complex_numbers), label="imaginary part")
+#         reals.append(np.real(complex_num))
+#         imaginary.append(np.imag(complex_num))
 
+#     plt.plot(reals, imaginary, '-')
+#     plt.plot(reals[0], imaginary[0],'go', label='start here')
+#     plt.plot(reals[-1], imaginary[-1],'ro', markersize='1.2', label='finish here')
 #     plt.legend()
-#     plt.ylabel(r'$\sqrt{E - x^2 (i x)^\epsilon}$')
-#     plt.xlabel('x')
-#     plt.title("Change of variables")
+#     plt.ylabel(r'$Im(\sqrt{E - x^2 (i x)^\epsilon})$')
+#     plt.xlabel(r'$Re(\sqrt{E - x^2 (i x)^\epsilon})$')
+
+#     # plt.title("Bender's integration contour")
+#     plt.title("change or variables integration contour")
 #     plt.show()
 
-# x_values = np.linspace(-10, 10, 10000)
-# ϵ = -1
-# whats_up_with_integrand3(x_values, E0, ϵ)
-# ##########################TEST#######################################
+
+# # Bender's integral
+# x_values = np.linspace(tp_minus, tp_plus, 10000)
+
+# # change of variables integral 
+# x_values = np.linspace(tp_minus_prime, tp_plus_prime, 10000) + 1j * np.imag(tp_minus)
+
+# whats_up_with_integrand(x_values, E0, ϵ)
+# ######################### TEST 1 #######################################
