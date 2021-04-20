@@ -45,7 +45,7 @@ def complex_fsolve(func, E0, **kwargs):
 def integrand(x_prime, E, ϵ):
     # Change of variables
     α = 3/2 - 1/(ϵ +2)
-    offset = - 1j * np.sin(np.pi * (3/2 - 1/(ϵ +2)))
+    offset = - E**(1/(ϵ+2)) * 1j * np.sin(np.pi * α)
     x = x_prime - offset
     return np.sqrt(E - x**2 * (1j * x)**ϵ)
 
@@ -163,12 +163,16 @@ def brute_force(func, E, ϵ):
 
 ##########################TEST#######################################
 
+
+
 ##########################TEST#######################################
 def whats_up_with_integrand(x_values, E, ϵ):
     # checking the direction of rotation of the non-Hermitian part of the potential
     # for some x values
     α = 3/2 - 1/(ϵ +2)
-    offset = - 1j * np.sin(np.pi * (3/2 - 1/(ϵ +2)))
+    offset = - E**(1/(ϵ+2)) * 1j * np.sin(np.pi * α)
+    # β = 1/2 - 1/(ϵ +2)
+    # offset = + E**(1/(ϵ+2)) * 1j * np.sin(np.pi * β)
 
     reals = []
     imaginary = []
@@ -188,10 +192,17 @@ def whats_up_with_integrand(x_values, E, ϵ):
     plt.title("change or variables WKB")
     plt.show()
 
-x_values = np.linspace(-10, 10, 1000)
-# ϵ = np.linspace(-0.5, 3, 30)
-ϵ = 1
-whats_up_with_integrand(x_values, E0, ϵ)
+
+x_values = np.linspace(-10, 10, 10000)
+#IC based on RK results give (ϵ, n) = (1, 0)
+# ϵ = 1
+# E0 = 1.1563
+
+ϵ = 2
+n = 8
+E = 60.185767651 
+
+whats_up_with_integrand(x_values, E, ϵ)
 
 ##########################TEST######################################
 # def whats_up_with_integrand3(x_values, E, ϵ):
@@ -199,7 +210,7 @@ whats_up_with_integrand(x_values, E0, ϵ)
 #     # for some x values using the change of variables from my integrand() function
 
 #     α = 3/2 - 1/(ϵ +2)
-#     offset = - 1j * np.sin(np.pi * (3/2 - 1/(ϵ +2)))
+#     offset = - 1j * np.sin(np.pi * α)
 
 #     complex_numbers = []
 #     for x_prime in x_values:
