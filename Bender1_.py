@@ -1,6 +1,6 @@
 # PHS3350
 # Week 5 - Energy levels of a family of non-Hermitian Hamiltonians
-# "what I cannot create I cannot understand" - R. Feynman. 
+# "what I cannot create I do not understand" - R. Feynman. 
 # Ana Fabela Hinojosa, 04/04/2021
 
 import numpy as np
@@ -47,7 +47,7 @@ def LHS(n):
     # Quantization condition
     return (n + 1/2) * np.pi
 
-def RHS(E, ϵ): #***********************************************************************************
+def RHS(E, ϵ):
     # Integral defining E
     # integration LIMITS
     tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
@@ -84,143 +84,77 @@ def brute_force(func, E, ϵ):
         return np.real(func(*args))
     tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
     tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
-    tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus) #is this + or -?
+    tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
     tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus) 
     # domain & differential (infinitesimal)
     x_prime = np.linspace(tp_minus_prime, tp_plus_prime, 50000)
     dx_prime = x_prime[1] - x_prime[0]
     return np.sum(real_func(x_prime, E, ϵ) * dx_prime)
 
+## Runge-Kutta, finding IC!
+def find_k(x, ϵ, E):
+    return np.sqrt(x**2 * (1j * x)**ϵ - E)
+
+# Schrödinger equation
+def Schrodinger_eqn(x, Ψ):
+    psi, psi_prime =  Ψ
+    psi_primeprime = (x**2 * (1j * x)**ϵ - E) * psi
+    Ψ_prime = np.array([psi_prime, psi_primeprime])
+    return Ψ_prime
+
+def Runge_Kutta(x, delta_x, Ψ):
+    k1 = Schrodinger_eqn(x, Ψ)
+    k2 = Schrodinger_eqn(x + delta_x / 2, Ψ + k1 * delta_x / 2) 
+    k3 = Schrodinger_eqn(x + delta_x / 2, Ψ + k2 * delta_x / 2) 
+    k4 = Schrodinger_eqn(x + delta_x, Ψ + k3 * delta_x) 
+    return Ψ + (delta_x / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
+
 
 #######################################function calls########################################################
-
-#IC based on RK results give (ϵ, n) = (1, 0)
+## WKB approximation
+##IC based on RK results given (ϵ, n) = (1, 0)
 # ϵ = 1
-E0 = 1.1563
-# E = E0
+# E1 = 1.1563
+# E = E1
+## IC based on RK results given (ϵ, n) = (2, 8)
+## ϵ = 2
+## E = 60.185767651 
 
-ϵ = 2
-E = 60.185767651 
+# tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
+# tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
+# tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
+# tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
 
-tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
-tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
-tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
-tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
+# Runge-Kutta
+# asymptotic solution
+# x value for finding k
+x_asymptotic = -3000
+# IC values from Bender table 1.
+ϵ = 1
+E = 1.1563
 
-########################## TEST 2 #######################################
-# ITERATIVE approach 1 for ϵ = 1
-Energies_1 = []
-for n in range(10):
-  E = complex_fsolve(error, E0, args=(1, n))
-  Energies_1.append(E)
+# x values
+xs = np.linspace(x_asymptotic, - x_asymptotic, 1024)
+x = 0
+delta_x = 0.0001
 
-# comparison to WKB and RK reported in Bender 
-n = range(10)
-E_RK= [1.1563, 4.1093, 7.5623, 11.3144, 15.2916, 19.4515, 23.7667, 28.2175, 32.7891, 37.4698]
-E_WKB = [1.0943, 4.0895, 7.5489, 11.3043, 15.2832, 19.4444, 23.7603, 28.2120, 32.7841, 37.4653]
-plt.plot(n, Energies_1 , label="my calculated energies")
-plt.plot(n, E_RK , label=r"$E_{RK}$")
-plt.plot(n, E_WKB , label=r"$E_{WKB}$")
-plt.legend()
-plt.xlabel("n")
-plt.ylabel("E")
-plt.show()
+# k values
+k = find_k(x_asymptotic, ϵ, E)
+# IC
+Ψ0 = [1, 1j * k]
 
-# ITERATIVE approach 2
-Energies_2 = []
-for n in range(10):
-    E_s = []
-    for ϵ in np.linspace(0, 3, 30):
-        E = complex_fsolve(error, E0, args=(ϵ, n))
-        E_s.append(E)
-        # print(f" {ϵ = }, {n = }, {E = }")
-    Energies_2.append(E_s)
-# print(Energies_2)
+# Runge-Kutta call
+psi = np.empty_like(xs, dtype = "complex_")
+for i in range(len(xs)):
+    psi[i] = Runge_Kutta(x, delta_x, Ψ0)[0]
+    # print(psi[i])
+    x += delta_x
 
-#PLOTING ITERATIVE approach 1
-for E_ϵs in Energies_2:
-    # print(E_ϵs)
-    ϵ = np.linspace(0, 3, 30)
-    plt.plot(ϵ, E_ϵs, "o-", markersize=2)
-# plt.legend()
-plt.ylim(0, 20)
-plt.xlabel("ϵ")
-plt.ylabel("E")
-plt.show()
 
-########################## TEST 2 #######################################
 
-##########################TEST#######################################
-# # FIND ENERGIES TO FEED INTO BRUTE INTEGRAL
-# Energies = []
-# # i = 0
-# for ϵ in range(3):
-#     # print(f"{ϵ = }")
-#     E_s = []
-#     for n in range(10):
-#         E = complex_fsolve(error, E0, args=(ϵ, n))
-#         E_s.append(E)
-#         # print(f"{i = }, {n = }, {E = }")
-#         # i+=1
-#     Energies.append(E_s)
 
-# qc = (6 + 1/2) * np.pi
-# brute_integral = brute_force(integrand, Energies[1][6], 1)
 
-# print("\nCase: (ϵ, n) = (1,6)")
-# print(f"\n(n + 1/2)π = {qc:.04f}")
-# print(f"\nEnergy from complex_fsolve() E = {Energies[1][6]:.04f}")
-# print(f"\nEnergy from {brute_integral = :.04f}\n")
-
-# # ITERATIVE approach 1
-# Energies = []
-# for n in range(10):
-#     E_s = []
-#     for ϵ in np.linspace(0, 3, 30):
-#         E = complex_fsolve(error, E0, args=(ϵ, n))
-#         E_s.append(E)
-#         # print(f" {ϵ = }, {n = }, {E = }")
-#     Energies.append(E_s)
-# # print(f"{Energies = }")
-
-# #PLOTING ITERATIVE
-# for E_ϵs in Energies:
-#     # print(E_ϵs)
-#     ϵ = np.linspace(0, 3, 30)
-#     plt.plot(ϵ, E_ϵs, "o-", markersize=3)#, label="mine")
-# # plt.legend()
-# plt.ylim(0, 20)
-# plt.xlabel("ϵ")
-# plt.ylabel("E")
-# plt.show()
-##########################TEST#######################################
-
-##########################TEST#######################################
-## Single case Comparison to Bender's analytic result (ϵ, n)
-# CHANGE n
-# n = 2
-# E_ϵs_n = []
-# analytic_E_ϵs_n = []
-# for ϵ in np.linspace(0, 3, 30):
-#     # complex_fsolve(error, E0, args=(1, 0))?
-#     E_ϵ_n = complex_fsolve(error, E0, args=(ϵ, n))
-#     E_ϵs_n.append(E_ϵ_n)
-
-#     analytic_E_ϵ_n = analytic_E(ϵ, n)
-#     analytic_E_ϵs_n.append(analytic_E_ϵ_n)
-
-# ϵ = np.linspace(0, 3, 30)
-# plt.plot(ϵ, E_ϵs_n, "o-", markersize=2, label="Ana")
-# plt.plot(ϵ, analytic_E_ϵs_n, "o-", markersize=2, label="Bender's")
-# plt.legend()
-# plt.ylim(0, 20)
-# plt.xlabel("ϵ")
-# plt.ylabel("E")
-# plt.show()
-
-##########################TEST#######################################
-
-# ######################### TEST 1 #######################################
+# ######################### WKB TEST 1 #######################################
 # def whats_up_with_integrand(x_values, E, ϵ):
 #     # checking the integration path of the integrand in the x-complex plane
 #     reals = []
@@ -250,4 +184,47 @@ plt.show()
 # x_values = np.linspace(tp_minus_prime, tp_plus_prime, 10000) + 1j * np.imag(tp_minus)
 
 # whats_up_with_integrand(x_values, E0, ϵ)
-# ######################### TEST 1 #######################################
+# ######################### WKB TEST 1 #######################################
+
+########################### WKB TEST 2 #######################################
+# # ITERATIVE approach 1 for ϵ = 1
+# Energies_1 = []
+# for n in range(10):
+#   E = complex_fsolve(error, E0, args=(1, n))
+#   Energies_1.append(E)
+
+# # comparison to WKB and RK reported in Bender 
+# n = range(10)
+# E_RK= [1.1563, 4.1093, 7.5623, 11.3144, 15.2916, 19.4515, 23.7667, 28.2175, 32.7891, 37.4698]
+# E_WKB = [1.0943, 4.0895, 7.5489, 11.3043, 15.2832, 19.4444, 23.7603, 28.2120, 32.7841, 37.4653]
+# plt.plot(n, Energies_1 , label="my calculated energies")
+# plt.plot(n, E_RK , label=r"$E_{RK}$")
+# plt.plot(n, E_WKB , label=r"$E_{WKB}$")
+# plt.legend()
+# plt.xlabel("n")
+# plt.ylabel("E")
+# plt.show()
+
+# # ITERATIVE approach 2
+# Energies_2 = []
+# for n in range(10):
+#     E_s = []
+#     for ϵ in np.linspace(0, 3, 30):
+#         E = complex_fsolve(error, E0, args=(ϵ, n))
+#         E_s.append(E)
+#         # print(f" {ϵ = }, {n = }, {E = }")
+#     Energies_2.append(E_s)
+# # print(Energies_2)
+
+# #PLOTING ITERATIVE approach 1
+# for E_ϵs in Energies_2:
+#     # print(E_ϵs)
+#     ϵ = np.linspace(0, 3, 30)
+#     plt.plot(ϵ, E_ϵs, "o-", markersize=2)
+# # plt.legend()
+# plt.ylim(0, 20)
+# plt.xlabel("ϵ")
+# plt.ylabel("E")
+# plt.show()
+
+########################## WKB TEST 2 #######################################
