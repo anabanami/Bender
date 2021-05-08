@@ -6,9 +6,11 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from scipy.integrate import quad
+from scipy.integrate import quad 
 from scipy.optimize import fsolve
 from scipy.special import gamma
+import scipy.special as sc
+from scipy import linalg
 
 plt.rcParams['figure.dpi'] = 200
 
@@ -110,46 +112,48 @@ def Runge_Kutta(x, delta_x, Ψ):
     return Ψ + (delta_x / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
 
 
-#######################################function calls########################################################
-## WKB approximation
-##IC based on RK results given (ϵ, n) = (1, 0)
-# ϵ = 1
-# E1 = 1.1563
-# E = E1
-## IC based on RK results given (ϵ, n) = (2, 8)
-## ϵ = 2
-## E = 60.185767651 
+#################################### Matrix SOLVING ###########################################
 
-# tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
-# tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
-# tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
-# tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
+def psi_blank(x, n):
+    return (1 / (2**n * sc.factorial(n))) * (1/ (2 * np.pi))**(1/4) * np.exp(-x**2/4) * sc.eval_hermite(n, np.sqrt(1/2) * x)
 
-# Runge-Kutta
-# asymptotic solution
-# x value for finding k
-x_asymptotic = -3000
-# IC values from Bender table 1.
+def Hamiltonian(x, ϵ, n):
+    h = 1e-6
+    d2Ψdx2 = (psi_blank(x + h, n) - 2 * psi_blank(x, n) + psi_blank(x - h, n)) / h**2
+    return d2Ψdx2 + (x**2 * (1j * x)**ϵ) * psi_blank(x, n)
+
+def element_integrand(x, ϵ, m, n):
+    #CHECK THESE IF mass = 1 instead of 1/2
+    psi_m = psi_blank(x, m)
+    return np.conj(psi_m) * Hamiltonian(x, ϵ, n) 
+
+# NxN MATRIX
+def Matrix(x, N):
+    M = np.zeros((N, N))
+    for m in range(N):
+        for n in range(N):
+            b = np.abs(np.sqrt(4 * max(m, n) +2))
+            element =  quad(element_integrand, -b, b, args=(ϵ, m, n), epsabs=1.49e-04, limit=50)[0]
+            # print(element)
+            M[m][n] = element
+    return M
+
+###################################function calls################################################
+# GLOBALS
 ϵ = 1
-E = 1.1563
+k = 1/2
+x = 2
+N = 5
 
-# x values
-xs = np.linspace(x_asymptotic, - x_asymptotic, 1024)
-x = 0
-delta_x = 0.0001
+# NxN MATRIX
+Matrix = Matrix(x, N)
+print(f"\nMatrix\n{Matrix}")
 
-# k values
-k = find_k(x_asymptotic, ϵ, E)
-# IC
-Ψ0 = [1, 1j * k]
+eigenvalues, eigenvectors = linalg.eig(Matrix)
+print(f"\nEigenvalues\n{np.real(eigenvalues)}")
+print(f"\nEigenvectors\n{eigenvectors.round(10)}\n")
 
-# Runge-Kutta call
-psi = np.empty_like(xs, dtype = "complex_")
-for i in range(len(xs)):
-    psi[i] = Runge_Kutta(x, delta_x, Ψ0)[0]
-    # print(psi[i])
-    x += delta_x
-
+# print(np.sum(abs(eigenvectors**2), axis=0)) # eigenvectors are unitary?
 
 
 
@@ -228,3 +232,27 @@ for i in range(len(xs)):
 # plt.show()
 
 ########################## WKB TEST 2 #######################################
+
+
+# # Runge-Kutta test call
+# psi = np.empty_like(xs, dtype = "complex_")
+# for i in range(len(xs)):
+#     psi[i] = Runge_Kutta(x, delta_x, Ψ0)[0]
+#     # print(psi[i])
+#     x += delta_x
+
+#######################################function calls############################################
+## WKB approximation
+##IC based on RK results given (ϵ, n) = (1, 0)
+# ϵ = 1
+# E1 = 1.1563
+# E = E1
+## IC based on RK results given (ϵ, n) = (2, 8)
+## ϵ = 2
+## E = 60.185767651 
+
+# tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
+# tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
+# tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
+# tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
+

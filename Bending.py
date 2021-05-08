@@ -1,15 +1,30 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from scipy.misc import derivative
-from scipy.integrate import odeint
-from scipy.integrate import solve_ivp
+from scipy.integrate import quad
+import scipy.special as sc
+from scipy import linalg
+from tqdm import tqdm
+
 
 plt.rcParams['figure.dpi'] = 200
+np.set_printoptions(linewidth=200)
+
+def complex_quad(func, a, b, **kwargs):
+    # Integration using scipy.integratequad() for a complex function
+    def real_func(*args):
+        return np.real(func(*args))
+
+    def imag_func(*args):
+        return np.imag(func(*args))
+
+    real_integral = quad(real_func, a, b, **kwargs)
+    imag_integral = quad(imag_func, a, b, **kwargs)
+    return real_integral[0] + 1j * imag_integral[0]
 
 ## Runge-Kutta, finding IC!
 def find_k(x, ϵ, E):
-    return np.sqrt(x**2 * (1j * x)**ϵ - E)
+    return np.sqrt(x ** 2 * (1j * x) ** ϵ - E)
 
 def abs_clip(x, level):
     if abs(x) > level:
@@ -17,136 +32,129 @@ def abs_clip(x, level):
     else:
         return x
 
-# # Schrödinger equation
-# def Schrodinger_eqn(x, E, ϵ, Ψ):
-#     u, v =  Ψ
-#     v = abs_clip(v, 1e100)
-#     w = (x**2 * (1j * x)**ϵ - E) * u
-#     Ψ_prime = np.array([v, w])
-#     return Ψ_prime
-
 # Schrödinger equation
-def Schrodinger_eqn(x, E, ϵ, Ψ):
-    u, v =  Ψ
-    # if derivative is blowing up return scaled version of derivative
-    if abs(v) > 1e100:
-        # print("clipping blow up!")
-        v = abs_clip(v, 1e100)
-        w = 0
-        Ψ_prime = np.array([v, w])
-        return Ψ_prime
-    else:
-        w = (x**2 * (1j * x)**ϵ - E) * u
-        Ψ_prime = np.array([v, w])
-        return Ψ_prime
+def Schrodinger_eqn(x, Ψ):
+    psi, psi_prime = Ψ
+    psi_primeprime = (x ** 2 * (1j * x) ** ϵ - E) * psi
+    Ψ_prime = np.array([psi_prime, psi_primeprime])
+    return Ψ_prime
 
 def Runge_Kutta(x, delta_x, E, ϵ, Ψ):
     k1 = Schrodinger_eqn(x, E, ϵ, Ψ)
-    k2 = Schrodinger_eqn(x + delta_x / 2, E, ϵ, Ψ + k1 * delta_x / 2) 
-    k3 = Schrodinger_eqn(x + delta_x / 2, E, ϵ, Ψ + k2 * delta_x / 2) 
-    k4 = Schrodinger_eqn(x + delta_x, E, ϵ, Ψ + k3 * delta_x) 
+    k2 = Schrodinger_eqn(x + delta_x / 2, E, ϵ, Ψ + k1 * delta_x / 2)
+    k3 = Schrodinger_eqn(x + delta_x / 2, E, ϵ, Ψ + k2 * delta_x / 2)
+    k4 = Schrodinger_eqn(x + delta_x, E, ϵ, Ψ + k3 * delta_x)
     return Ψ + (delta_x / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
 
-############################### GLOBALS ###########################################
-n = 100
-# IC values from Bender table 1.
+#################################### Matrix SOLVING ###########################################
+
+def psi_blank(x, n):
+
+    pi_powered = np.pi ** (-0.25)
+
+    x = np.array(x)
+    if n == 0:
+        return np.ones_like(x) * pi_powered * np.exp(-x ** 2 / 2)
+    if n == 1:
+        return (
+            np.sqrt(2.0)
+            * x
+            * np.pi ** (-0.25)
+            * np.exp(-x ** 2 / 2)
+        )
+    h_i_2 = np.ones_like(x) * pi_powered
+    h_i_1 = np.sqrt(2.0) * x * pi_powered
+    sum_log_scale = np.zeros_like(x)
+    for i in range(2, n + 1):
+
+        # RECURRENCE RELATION
+        h_i = np.sqrt(2.0 / i) * x * h_i_1 - np.sqrt((i - 1.0) / i) * h_i_2
+        h_i_2, h_i_1 = h_i_1, h_i
+
+        x[x == 0] = 1e-200
+
+        log_scale = np.log(abs(h_i)).round()
+        scale = np.exp(-log_scale)
+        h_i = h_i * scale
+        h_i_1 = h_i_1 * scale
+        h_i_2 = h_i_2 * scale
+        sum_log_scale += log_scale
+    return h_i * np.exp(-x ** 2 / 2 + sum_log_scale)
+
+# def psi_blank(x, n):
+#     if n < 100:
+#         return (
+#             (1 / (2 ** n * sc.factorial(n)))
+#             * (1 / (2 * np.pi)) ** (1 / 4)
+#             * np.exp(-x ** 2 / 4)
+#             * sc.eval_hermite(n, np.sqrt(1 / 2) * x)
+#         )
+#     else:
+#         return (
+#             2 ** (-1 / 2 * (n + 3 / 2))
+#             * np.pi ** -3
+#             / 4
+#             * n ** (-1 / 2 - n)
+#             * np.exp(n - (x ** 2) / 4)
+#             * sc.eval_hermite(n, np.sqrt(1 / 2) * x)
+#         )
+
+def Hamiltonian(x, ϵ, n):
+    h = 1e-6
+    d2Ψdx2 = (psi_blank(x + h, n) - 2 * psi_blank(x, n) + psi_blank(x - h, n)) / h ** 2
+    return d2Ψdx2 + (x ** 2 * (1j * x) ** ϵ) * psi_blank(x, n)
+
+def element_integrand(x, ϵ, m, n):
+    # CHECK THESE IF mass = 1 instead of 1/2
+    psi_m = psi_blank(x, m)
+    return np.conj(psi_m) * Hamiltonian(x, ϵ, n)
+
+# NxN MATRIX
+def Matrix(x, N):
+    M = np.zeros((N, N), dtype="complex")
+    for m in tqdm(range(N)):
+        for n in tqdm(range(N)):
+            # b = 10 * np.abs(np.sqrt(4 * max(m, n) + 2))
+            element = complex_quad(
+                element_integrand, -b, b, args=(ϵ, m, n), epsabs=1.49e-02, limit=1000
+            )
+            # print(element)
+            M[m][n] = element
+    return M
+
+###################################function calls################################################
+# GLOBALS
 ϵ = 1
-E = 1.1563
+k = 1 / 2
+x = 2
+N = 10
 
-# Asymtotic x value for finding k
-x_asymptotic = -30
-# x values
-xs = np.linspace(x_asymptotic, - x_asymptotic, n)
-delta_x = xs[1] - xs[0]
+# # NxN MATRIX
+# Matrix = Matrix(x, N)
+# np.save('matrix.npy', Matrix)
+# print(f"\nMatrix\n{Matrix}")
 
-# k values
-k = find_k(x_asymptotic, ϵ, E)
-# IC
-Ψ0 = [1, 1j * k]
+# eigenvalues, eigenvectors = linalg.eig(Matrix)
+# print(f"\nEigenvalues\n{eigenvalues}")
+# print(f"\nEigenvectors\n{eigenvectors.round(10)}\n")
+## print(np.sum(abs(eigenvectors**2), axis=0)) # eigenvectors are unitary?
 
-############################### SHOOTING method ##################################
-# INITIAL ENERGY BOUNDS
-E_lower = 0
-E_upper = 20
-Energy = np.linspace(E_lower, E_upper, n)
+##############plots################
+xs = np.linspace(-40, 40, 2048 * 10, endpoint=False)
+# plt.plot(xs, psi_blank(xs, 300), linewidth=1)
+# plt.plot(xs, np.real(Hamiltonian(xs, ϵ, 300)), label="Real part", linewidth=1)
+# plt.plot(xs, np.imag(Hamiltonian(xs, ϵ, 300)), label="Imaginary part", linewidth=1)
 
-mod_squared_values = []
-mod_squared_solutions = []
+m = 300
+n = 300
+b = np.abs(np.sqrt(4 * min(m, n) + 2)) + 2
 
-# first run of shooting method
-for E_i in Energy:
-    mod_squared_psi = []
-    Ψ = Ψ0
-    for x in xs:
-        mod_squared_psi.append(abs(Ψ[0]**2))
-        Ψ = Runge_Kutta(x, delta_x,  E_i, ϵ, Ψ)
-
-    mod_squared_values.append(mod_squared_psi[-1])
-    mod_squared_solutions.append(mod_squared_psi)
-
-
-# print(f"\n{len(mod_squared_solutions) = }\n")
-# print(f"\n{mod_squared_solutions = }\n")
-# print(f"\n{len(mod_squared_psi) = }\n")
-# print(f"\n{mod_squared_psi = }\n")
-print(f"\n{len(mod_squared_values) = }\n")
-print(f"\n{mod_squared_values = }\n")
-
-plt.plot(xs, mod_squared_solutions[0], label=r"$E_0$")
-plt.plot(xs, mod_squared_solutions[1], label=r"$E_1$")
-plt.plot(xs, mod_squared_solutions[2], label=r"$E_2$")
-plt.ylabel(r"$|u^2|$")
-plt.xlabel("x")
+plt.plot(xs, np.real(element_integrand(xs, ϵ, m, n)), label="Real part", linewidth=1)
+plt.plot(xs, np.imag(element_integrand(xs, ϵ, m, n)), label="Imaginary part", linewidth=1)
+plt.axvline(b, color='grey' , linestyle=":", label="classical turning points")
+plt.axvline(-b, color='grey' , linestyle=":")
 plt.legend()
 plt.show()
+##############plots################
 
 
-
-# ## after first run...
-# ## step 5 in log book
-# E_flip_signs = []
-# E_flip = []
-# for i in range(len(signs) - 1):
-#     if not signs[i] == signs[i+1]:
-#         E_flip.append([Es[i], Es[i+1]])
-#         E_flip_signs.append([signs[i], signs[i+1]])
-#     else:
-#         continue
-
-# # print(f"\n{E_flip=}\n")
-# # print(f"\n{E_flip_signs=}\n")
-
-# for i in range(len(E_flip)):
-#     E_lower, E_upper = E_flip[i]
-#     sign_lower, sign_upper = E_flip_signs[i]
-
-# print(f"\n{sign_lower = } {sign_upper =}\n")
-
-    # print("Hello, this is the start of the while loop")
-    # while abs(E_upper - E_lower) > 1e-12 * meV:
-    #     E_mid = (E_lower + E_upper) / 2
-    #     print(f"{E_mid = }")
-        # w = np.real(Runge_Kutta(x, E_i, delta_x, Ψ0))[0]
-#         w = solution_ODE_shooting.Ψ[0]
-
-#         # plt.plot(r / angstrom, w)
-
-#         if np.sign(w[-1]) == sign_lower:
-#             # print("if statement")
-#             E_lower = E_mid
-#         else:
-#             # print("else statement")
-#             E_upper = E_mid
-
-#     print("Hello, this is the end of the while loop")
-
-
-
-
-############################### TEST Runge-Kutta ##################################
-# psi = np.zeros_like(xs, dtype = "complex_")
-# for i in range(len(xs)):
-#     psi[i] = Runge_Kutta(x, delta_x, E, ϵ, Ψ0)[0]
-#     # print(psi[i])
-#     x += delta_x
-# print(f"\n{psi}\n")
