@@ -114,7 +114,7 @@ def Matrix(x, N):
     M = np.zeros((N, N), dtype="complex")
     for m in tqdm(range(N)):
         for n in tqdm(range(N)):
-            # b = 10 * np.abs(np.sqrt(4 * max(m, n) + 2))
+            b = np.abs(np.sqrt(4 * min(m, n) + 2)) + 2
             element = complex_quad(
                 element_integrand, -b, b, args=(ϵ, m, n), epsabs=1.49e-02, limit=1000
             )
@@ -127,12 +127,12 @@ def Matrix(x, N):
 ϵ = 1
 k = 1 / 2
 x = 2
-N = 10
+N = 130
 
-# # NxN MATRIX
-# Matrix = Matrix(x, N)
-# np.save('matrix.npy', Matrix)
-# print(f"\nMatrix\n{Matrix}")
+# NxN MATRIX
+Matrix = Matrix(x, N)
+np.save('matrix.npy', Matrix)
+print(f"\nMatrix\n{Matrix}")
 
 # eigenvalues, eigenvectors = linalg.eig(Matrix)
 # print(f"\nEigenvalues\n{eigenvalues}")
@@ -140,21 +140,21 @@ N = 10
 ## print(np.sum(abs(eigenvectors**2), axis=0)) # eigenvectors are unitary?
 
 ##############plots################
-xs = np.linspace(-40, 40, 2048 * 10, endpoint=False)
-# plt.plot(xs, psi_blank(xs, 300), linewidth=1)
-# plt.plot(xs, np.real(Hamiltonian(xs, ϵ, 300)), label="Real part", linewidth=1)
-# plt.plot(xs, np.imag(Hamiltonian(xs, ϵ, 300)), label="Imaginary part", linewidth=1)
+# xs = np.linspace(-40, 40, 2048 * 10, endpoint=False)
+# # plt.plot(xs, psi_blank(xs, 300), linewidth=1)
+# # plt.plot(xs, np.real(Hamiltonian(xs, ϵ, 300)), label="Real part", linewidth=1)
+# # plt.plot(xs, np.imag(Hamiltonian(xs, ϵ, 300)), label="Imaginary part", linewidth=1)
 
-m = 300
-n = 300
-b = np.abs(np.sqrt(4 * min(m, n) + 2)) + 2
+# m = 300
+# n = 300
+# b = np.abs(np.sqrt(4 * min(m, n) + 2)) + 2
 
-plt.plot(xs, np.real(element_integrand(xs, ϵ, m, n)), label="Real part", linewidth=1)
-plt.plot(xs, np.imag(element_integrand(xs, ϵ, m, n)), label="Imaginary part", linewidth=1)
-plt.axvline(b, color='grey' , linestyle=":", label="classical turning points")
-plt.axvline(-b, color='grey' , linestyle=":")
-plt.legend()
-plt.show()
+# plt.plot(xs, np.real(element_integrand(xs, ϵ, m, n)), label="Real part", linewidth=1)
+# plt.plot(xs, np.imag(element_integrand(xs, ϵ, m, n)), label="Imaginary part", linewidth=1)
+# plt.axvline(b, color='grey' , linestyle=":", label="classical turning points")
+# plt.axvline(-b, color='grey' , linestyle=":")
+# plt.legend()
+# plt.show()
 ##############plots################
 
 
