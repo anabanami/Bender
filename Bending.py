@@ -5,6 +5,7 @@ from scipy.integrate import quad
 import scipy.special as sc
 from scipy import linalg
 from tqdm import tqdm
+from odhobs import psi as cpsi_blank
 
 
 plt.rcParams['figure.dpi'] = 200
@@ -46,67 +47,18 @@ def Runge_Kutta(x, delta_x, E, ϵ, Ψ):
     k4 = Schrodinger_eqn(x + delta_x, E, ϵ, Ψ + k3 * delta_x)
     return Ψ + (delta_x / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
 
-#################################### Matrix SOLVING ###########################################
-
-def psi_blank(x, n):
-
-    pi_powered = np.pi ** (-0.25)
-
-    x = np.array(x)
-    if n == 0:
-        return np.ones_like(x) * pi_powered * np.exp(-x ** 2 / 2)
-    if n == 1:
-        return (
-            np.sqrt(2.0)
-            * x
-            * np.pi ** (-0.25)
-            * np.exp(-x ** 2 / 2)
-        )
-    h_i_2 = np.ones_like(x) * pi_powered
-    h_i_1 = np.sqrt(2.0) * x * pi_powered
-    sum_log_scale = np.zeros_like(x)
-    for i in range(2, n + 1):
-
-        # RECURRENCE RELATION
-        h_i = np.sqrt(2.0 / i) * x * h_i_1 - np.sqrt((i - 1.0) / i) * h_i_2
-        h_i_2, h_i_1 = h_i_1, h_i
-
-        x[x == 0] = 1e-200
-
-        log_scale = np.log(abs(h_i)).round()
-        scale = np.exp(-log_scale)
-        h_i = h_i * scale
-        h_i_1 = h_i_1 * scale
-        h_i_2 = h_i_2 * scale
-        sum_log_scale += log_scale
-    return h_i * np.exp(-x ** 2 / 2 + sum_log_scale)
-
-# def psi_blank(x, n):
-#     if n < 100:
-#         return (
-#             (1 / (2 ** n * sc.factorial(n)))
-#             * (1 / (2 * np.pi)) ** (1 / 4)
-#             * np.exp(-x ** 2 / 4)
-#             * sc.eval_hermite(n, np.sqrt(1 / 2) * x)
-#         )
-#     else:
-#         return (
-#             2 ** (-1 / 2 * (n + 3 / 2))
-#             * np.pi ** -3
-#             / 4
-#             * n ** (-1 / 2 - n)
-#             * np.exp(n - (x ** 2) / 4)
-#             * sc.eval_hermite(n, np.sqrt(1 / 2) * x)
-#         )
+#################################### Matrix SOLVING ###########################################         )
 
 def Hamiltonian(x, ϵ, n):
+    x = 1e-200
+    # x[x == 0] = 1e-200
     h = 1e-6
-    d2Ψdx2 = (psi_blank(x + h, n) - 2 * psi_blank(x, n) + psi_blank(x - h, n)) / h ** 2
-    return d2Ψdx2 + (x ** 2 * (1j * x) ** ϵ) * psi_blank(x, n)
+    d2Ψdx2 = (cpsi_blank(n, x + h) - 2 * cpsi_blank(n, x) + cpsi_blank(n, x - h)) / h ** 2
+    return d2Ψdx2 + (x ** 2 * (1j * x) ** ϵ) * cpsi_blank(n, x)
 
 def element_integrand(x, ϵ, m, n):
     # CHECK THESE IF mass = 1 instead of 1/2
-    psi_m = psi_blank(x, m)
+    psi_m = cpsi_blank(m, x)
     return np.conj(psi_m) * Hamiltonian(x, ϵ, n)
 
 # NxN MATRIX
@@ -116,7 +68,7 @@ def Matrix(x, N):
         for n in tqdm(range(N)):
             b = np.abs(np.sqrt(4 * min(m, n) + 2)) + 2
             element = complex_quad(
-                element_integrand, -b, b, args=(ϵ, m, n), epsabs=1.49e-02, limit=1000
+                element_integrand, -b, b, args=(ϵ, m, n), epsabs=1.49e-08, limit=1000
             )
             # print(element)
             M[m][n] = element
@@ -124,15 +76,17 @@ def Matrix(x, N):
 
 ###################################function calls################################################
 # GLOBALS
-ϵ = 1
+epsilons = np.linspace(-1, 0, 5)
 k = 1 / 2
 x = 2
-N = 130
+N = 800
 
 # NxN MATRIX
-Matrix = Matrix(x, N)
-np.save('matrix.npy', Matrix)
-print(f"\nMatrix\n{Matrix}")
+for ϵ in epsilons:
+    print(f"{ϵ = }")
+    matrix = Matrix(x, N)
+    np.save(f'matrix_{ϵ}.npy', matrix)
+    # print(f"\nMatrix\n{matrix}")
 
 # eigenvalues, eigenvectors = linalg.eig(Matrix)
 # print(f"\nEigenvalues\n{eigenvalues}")
@@ -140,21 +94,20 @@ print(f"\nMatrix\n{Matrix}")
 ## print(np.sum(abs(eigenvectors**2), axis=0)) # eigenvectors are unitary?
 
 ##############plots################
-# xs = np.linspace(-40, 40, 2048 * 10, endpoint=False)
-# # plt.plot(xs, psi_blank(xs, 300), linewidth=1)
-# # plt.plot(xs, np.real(Hamiltonian(xs, ϵ, 300)), label="Real part", linewidth=1)
-# # plt.plot(xs, np.imag(Hamiltonian(xs, ϵ, 300)), label="Imaginary part", linewidth=1)
-
 # m = 300
 # n = 300
 # b = np.abs(np.sqrt(4 * min(m, n) + 2)) + 2
-
+# xs = np.linspace(-40, 40, 2048 * 10, endpoint=False)
+# plt.plot(xs, cpsi_blank(300, xs), linewidth=1)
+# plt.plot(xs, np.real(Hamiltonian(xs, ϵ, n)), label="Real part", linewidth=1)
+# plt.plot(xs, np.imag(Hamiltonian(xs, ϵ, n)), label="Imaginary part", linewidth=1)
 # plt.plot(xs, np.real(element_integrand(xs, ϵ, m, n)), label="Real part", linewidth=1)
 # plt.plot(xs, np.imag(element_integrand(xs, ϵ, m, n)), label="Imaginary part", linewidth=1)
-# plt.axvline(b, color='grey' , linestyle=":", label="classical turning points")
+# plt.axvline(b, color='grey' , linestyle=":", label="Turning points")
 # plt.axvline(-b, color='grey' , linestyle=":")
 # plt.legend()
 # plt.show()
-##############plots################
+# ##############plots################
+
 
 
