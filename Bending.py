@@ -53,8 +53,9 @@ def Hamiltonian(x, ϵ, n):
     x = 1e-200
     # x[x == 0] = 1e-200
     h = 1e-6
-    d2Ψdx2 = (cpsi_blank(n, x + h) - 2 * cpsi_blank(n, x) + cpsi_blank(n, x - h)) / h ** 2
-    return d2Ψdx2 + (x ** 2 * (1j * x) ** ϵ) * cpsi_blank(n, x)
+    psi_n = cpsi_blank(n, x)
+    d2Ψdx2 = (cpsi_blank(n, x + h) - 2 * psi_ni + cpsi_blank(n, x - h)) / h ** 2
+    return d2Ψdx2 + (x ** 2 * (1j * x) ** ϵ) * psi_n
 
 def element_integrand(x, ϵ, m, n):
     # CHECK THESE IF mass = 1 instead of 1/2
