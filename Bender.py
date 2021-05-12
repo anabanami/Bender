@@ -111,54 +111,81 @@ def Runge_Kutta(x, delta_x, Ψ):
     k4 = Schrodinger_eqn(x + delta_x, Ψ + k3 * delta_x) 
     return Ψ + (delta_x / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
 
-
-#################################### Matrix SOLVING ###########################################
-
-def psi_blank(x, n):
-    return (1 / (2**n * sc.factorial(n))) * (1/ (2 * np.pi))**(1/4) * np.exp(-x**2/4) * sc.eval_hermite(n, np.sqrt(1/2) * x)
-
-def Hamiltonian(x, ϵ, n):
-    h = 1e-6
-    d2Ψdx2 = (psi_blank(x + h, n) - 2 * psi_blank(x, n) + psi_blank(x - h, n)) / h**2
-    return d2Ψdx2 + (x**2 * (1j * x)**ϵ) * psi_blank(x, n)
-
-def element_integrand(x, ϵ, m, n):
-    #CHECK THESE IF mass = 1 instead of 1/2
-    psi_m = psi_blank(x, m)
-    return np.conj(psi_m) * Hamiltonian(x, ϵ, n) 
-
-# NxN MATRIX
-def Matrix(x, N):
-    M = np.zeros((N, N))
-    for m in range(N):
-        for n in range(N):
-            b = np.abs(np.sqrt(4 * max(m, n) +2))
-            element =  quad(element_integrand, -b, b, args=(ϵ, m, n), epsabs=1.49e-04, limit=50)[0]
-            # print(element)
-            M[m][n] = element
-    return M
-
-###################################function calls################################################
-# GLOBALS
+#######################################function calls############################################
+# WKB approximation
+#IC based on RK results given (ϵ, n) = (1, 0)
 ϵ = 1
-k = 1/2
-x = 2
-N = 5
+E1 = 1.1563
+E = E1
 
-# NxN MATRIX
-Matrix = Matrix(x, N)
-print(f"\nMatrix\n{Matrix}")
+N = 100
+epsilons = np.linspace(-1.0, 0, N)
 
-eigenvalues, eigenvectors = linalg.eig(Matrix)
-print(f"\nEigenvalues\n{np.real(eigenvalues)}")
-print(f"\nEigenvectors\n{eigenvectors.round(10)}\n")
-
-# print(np.sum(abs(eigenvectors**2), axis=0)) # eigenvectors are unitary?
+tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
+tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
+tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
+tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
 
 
+######################## FINAL plot of eigenvalues ###################################
+# ITERATIVE approach 2
+Energies_2 = []
+for n in range(10):
+    E_s = []
+    for ϵ in np.linspace(0, 3, 30):
+        E = complex_fsolve(error, E1, args=(ϵ, n))
+        E_s.append(E)
+        # print(f" {ϵ = }, {n = }, {E = }")
+    Energies_2.append(E_s)
+# print(Energies_2)
 
+#PLOTING ITERATIVE approach 1
+for E_ϵs in Energies_2:
+    # print(E_ϵs)
+    ϵ = np.linspace(0, 3, 30)
+    plt.plot(ϵ, E_ϵs, "o-", color='k', markersize=1)
+# plt.legend()
+# plt.ylim(0, 20)
+plt.xlabel("ϵ")
+plt.ylabel("E")
 
-# ######################### WKB TEST 1 #######################################
+for i, ϵ in enumerate(epsilons):
+    matrix = np.load(f'matrices/matrix_{i:03d}.npy')
+    eigenvalues, blergh_eigenvectors = linalg.eig(matrix)
+
+    positive_evals = [i for i in eigenvalues if 0 < np.real(i) < 20 and abs(np.imag(i)) < 1]
+    sorted_eigenvalues = sorted(positive_evals, key=lambda x: np.real(x))
+
+    ϵ_list = np.full(len(sorted_eigenvalues), ϵ)
+    zeroes_list = np.zeros_like(ϵ_list)
+
+    plt.plot(ϵ_list, np.real(sorted_eigenvalues), marker='.', linestyle='None', color='k', markersize=1)
+    plt.plot(ϵ_list, np.imag(sorted_eigenvalues), marker='.', linestyle='None', color='r', markersize=1)
+    plt.plot(ϵ_list, zeroes_list, marker='.', linestyle='None', color='white', markersize=2)
+
+plt.axis(ymin=-1, ymax=20)
+plt.axvline(-0.57793, color='orange', linestyle=':', label="ϵ = -0.57793")
+plt.axvline(0, color='purple', linestyle=':', label="PT-symmetry breaking")
+plt.legend()
+plt.savefig("NHH_eigenvalues.png")
+plt.show()
+    
+    # FILTER?
+    # nonzero = abs(evals.real) > 0
+    # plot(epsilons[nonzero], evals.imag[nonzero])
+
+###################### Runge-Kutta test call ###############################
+
+# # 
+# psi = np.empty_like(xs, dtype = "complex_")
+# for i in range(len(xs)):
+#     psi[i] = Runge_Kutta(x, delta_x, Ψ0)[0]
+#     # print(psi[i])
+#     x += delta_x
+
+##################### Runge-Kutta test call ###############################
+
+# ######################### WKB TEST 1 ####################################
 # def whats_up_with_integrand(x_values, E, ϵ):
 #     # checking the integration path of the integrand in the x-complex plane
 #     reals = []
@@ -188,13 +215,13 @@ print(f"\nEigenvectors\n{eigenvectors.round(10)}\n")
 # x_values = np.linspace(tp_minus_prime, tp_plus_prime, 10000) + 1j * np.imag(tp_minus)
 
 # whats_up_with_integrand(x_values, E0, ϵ)
-# ######################### WKB TEST 1 #######################################
+# ######################### WKB TEST 1 #####################################
 
-########################### WKB TEST 2 #######################################
-# # ITERATIVE approach 1 for ϵ = 1
+########################### WKB TEST 2 #####################################
+# ITERATIVE approach 1 for ϵ = 1
 # Energies_1 = []
 # for n in range(10):
-#   E = complex_fsolve(error, E0, args=(1, n))
+#   E = complex_fsolve(error, E1, args=(1, n))
 #   Energies_1.append(E)
 
 # # comparison to WKB and RK reported in Bender 
@@ -208,51 +235,4 @@ print(f"\nEigenvectors\n{eigenvectors.round(10)}\n")
 # plt.xlabel("n")
 # plt.ylabel("E")
 # plt.show()
-
-# # ITERATIVE approach 2
-# Energies_2 = []
-# for n in range(10):
-#     E_s = []
-#     for ϵ in np.linspace(0, 3, 30):
-#         E = complex_fsolve(error, E0, args=(ϵ, n))
-#         E_s.append(E)
-#         # print(f" {ϵ = }, {n = }, {E = }")
-#     Energies_2.append(E_s)
-# # print(Energies_2)
-
-# #PLOTING ITERATIVE approach 1
-# for E_ϵs in Energies_2:
-#     # print(E_ϵs)
-#     ϵ = np.linspace(0, 3, 30)
-#     plt.plot(ϵ, E_ϵs, "o-", markersize=2)
-# # plt.legend()
-# plt.ylim(0, 20)
-# plt.xlabel("ϵ")
-# plt.ylabel("E")
-# plt.show()
-
-########################## WKB TEST 2 #######################################
-
-
-# # Runge-Kutta test call
-# psi = np.empty_like(xs, dtype = "complex_")
-# for i in range(len(xs)):
-#     psi[i] = Runge_Kutta(x, delta_x, Ψ0)[0]
-#     # print(psi[i])
-#     x += delta_x
-
-#######################################function calls############################################
-## WKB approximation
-##IC based on RK results given (ϵ, n) = (1, 0)
-# ϵ = 1
-# E1 = 1.1563
-# E = E1
-## IC based on RK results given (ϵ, n) = (2, 8)
-## ϵ = 2
-## E = 60.185767651 
-
-# tp_minus = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2))))
-# tp_plus = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2))))
-# tp_minus_prime = E**(1/(ϵ+2)) * np.exp(1j * np.pi * (3/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
-# tp_plus_prime = E**(1/(ϵ+2)) * np.exp(-1j * np.pi * (1/2 - (1/(ϵ+2)))) - 1j * np.imag(tp_minus)
-
+########################## WKB TEST 2 #####################################

@@ -8,24 +8,25 @@ from scipy import linalg
 import matplotlib
 import matplotlib.pyplot as plt
 
-epsilons = np.linspace(-1.0, 0, 100)
+N = 100
+epsilons = np.linspace(-1.0, 0, N)
 
-for ϵ in epsilons:
-    matrix = np.load(f'matrix_{ϵ}.npy')
+for i, ϵ in enumerate(epsilons):
+    matrix = np.load(f'matrices/matrix_{i:03d}.npy')
     eigenvalues, blergh_eigenvectors = linalg.eig(matrix)
 
-    positive_evals = [i for i in eigenvalues if 0 < np.real(i) < 15 and abs(np.imag(i)) < 1]
+    positive_evals = [i for i in eigenvalues if 0 < np.real(i) < 20 and abs(np.imag(i)) < 1]
     sorted_eigenvalues = sorted(positive_evals, key=lambda x: np.real(x))
 
     ϵ_list = np.full(len(sorted_eigenvalues), ϵ)
-    print(f"{ϵ_list = }")
+    # print(f"{ϵ_list = }")
 
-    plt.plot(ϵ_list, np.real(sorted_eigenvalues), marker='o', linestyle='None', color='k', markersize=6)
-    plt.plot(ϵ_list, np.imag(sorted_eigenvalues), marker='o', linestyle='None', color='r', markersize=6)
+    plt.plot(ϵ_list, np.real(sorted_eigenvalues), marker='.', linestyle='None', color='k', markersize=3)
+    plt.plot(ϵ_list, np.imag(sorted_eigenvalues), marker='.', linestyle='None', color='r', markersize=3)
 
-plt.axis(ymin=0, ymax=15)
+plt.axis(ymin=-1, ymax=20)
+plt.axis()
 plt.show()
-
 
 
 
