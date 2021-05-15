@@ -29,9 +29,7 @@ def complex_quad(func, a, b, **kwargs):
     imag_integral = quad(imag_func, a, b, **kwargs)
     return real_integral[0] + 1j * imag_integral[0]
 
-
 #################################### Matrix SOLVING ###########################################         )
-
 
 def Hamiltonian(x, ϵ, n):
     x = np.array(x)
