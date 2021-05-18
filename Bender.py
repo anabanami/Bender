@@ -15,6 +15,8 @@ from tqdm import tqdm
 from odhobs import psi as cpsi_blank
 
 plt.rcParams['figure.dpi'] = 200
+np.set_printoptions(linewidth=200)
+
 
 
 def complex_quad(func, a, b, **kwargs):
@@ -177,7 +179,7 @@ tp_plus_prime = E ** (1 / (ϵ + 2)) * np.exp(
 Energies_2 = np.load("Energies_unbroken.npy")
 
 
-def final_form():
+def figure_final_form():
     for E_ϵs in Energies_2:
         # print(E_ϵs)
         ϵ = np.linspace(0, 3, 30)
@@ -226,7 +228,7 @@ def final_form():
     return np.array(eigenvectors_list)
 
 
-coefficients = final_form()
+coefficients = figure_final_form()
 
 ####################### Eigenvectors plot ##################################
 
@@ -240,7 +242,7 @@ def spatial_wavefunctions(N, x, epsilons):
     np.save(f"PSI_ns.npy", PSI_ns)
 
     eigenstates = []
-    for i in range(len(epsilons)):
+    for i, ϵ in enumerate(epsilons):
         c = coefficients[i]
         for j in range(N):  # for each eigenvector
             d = c[:, j]
@@ -248,17 +250,16 @@ def spatial_wavefunctions(N, x, epsilons):
             for n in range(N):  # for each H.O. basis vector
                 psi_jx += d[n] * PSI_ns[n]
                 plt.plot(x, abs(psi_jx) ** 2)
-                plt.savefig(f"spatial_wavefunctions/wavefunction_{i:03d}_{n:03d}.png")
+                plt.savefig(f"spatial_wavefunctions/wavefunction_{ϵ}_{n:03d}.png")
                 plt.clf()
-            assert 0
             eigenstates.append(psi_jx)
 
     np.save(f'eigenstates.npy', np.array(eigenstates))
 
 N = 100
 epsilons = np.linspace(-1.0, 0, N)
-xs = np.linspace(-30, 30, 1024)
-spatial_wavefunctions(N, xs, epsilons)
+xs = np.linspace(-20, 20, 1024)
+# spatial_wavefunctions(N, xs, epsilons)
 
 ####################### Eigenvectors plot ##################################
 
@@ -306,7 +307,7 @@ spatial_wavefunctions(N, xs, epsilons)
 # ######################### WKB TEST 1 #####################################
 
 ########################### WKB TEST 2 #####################################
-# ITERATIVE approach 1 for ϵ = 1
+## ITERATIVE approach 1 for ϵ = 1
 # Energies_1 = []
 # for n in range(10):
 #   E = complex_fsolve(error, E1, args=(1, n))
@@ -324,3 +325,26 @@ spatial_wavefunctions(N, xs, epsilons)
 # plt.ylabel("E")
 # plt.show()
 ########################## WKB TEST 2 #####################################
+
+######################## WKB unbroken region ##############################
+
+# E0 = 1.1563
+# # # ITERATIVE
+# Energies = []
+# for n in range(10):
+#     E_ϵs = []
+#     for ϵ in np.linspace(0, 3, 30):
+#         E_ϵ = complex_fsolve(error, E0, args=(ϵ, n))
+#         E_ϵs.append(E_ϵ)
+#     Energies.append(E_ϵs)
+
+# #PLOTING ITERATIVE
+# for E_ϵs in Energies:
+#     ϵ = np.linspace(0, 3, 30)
+#     plt.plot(ϵ, E_ϵs, "o-", markersize=2)
+# plt.ylim(0, 20)
+# plt.xlabel("ϵ")
+# plt.ylabel("E")
+# plt.show()
+
+######################## WKB unbroken region ##############################
