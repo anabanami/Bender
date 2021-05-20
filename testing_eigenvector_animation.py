@@ -37,16 +37,19 @@ def linear_algebra(epsilons):
 ####################### sorting Eigenvectors ##################################
 
 def filtering_and_sorting(evals, evects):
-    mask = (0 < evals.real) & (evals.real < 20) & (evals.imag < 0.3)
+    mask = (0 < evals.real) & (evals.real < 20)
     # print(mask)
     evals = evals[mask]
     evects = evects[:, mask]
 
     # sorting
-    order = np.argsort(evals)
+    order = np.argsort(np.round(evals.real, 3) + np.round(evals.imag, 3) / 1e6)
     # print(order)
     evals = evals[order]
     evects = evects[:, order]
+
+    # print(evals)
+
     return evals[1:3], evects[:, 1:3]
 
 ####################### Eigenvectors plot ##################################
@@ -59,12 +62,16 @@ def spatial_wavefunctions(N, x, epsilons, evals, evects):
         psi_n = cpsi_blank(n, x)
         PSI_ns.append(psi_n)
     PSI_ns = np.array(PSI_ns)
+
+    # plt.plot(x, PSI_ns[1])
+    # plt.show()
+    # ass
     np.save(f"PSI_ns.npy", PSI_ns)
 
 
     for i, ϵ in enumerate(epsilons):
 
-        _, c = filtering_and_sorting(evals[i], evects[i])
+        eigenvalues, c = filtering_and_sorting(evals[i], evects[i])
 
         if c.shape[1] < 2:
             print(i, "continuing")
@@ -75,7 +82,6 @@ def spatial_wavefunctions(N, x, epsilons, evals, evects):
             d = c[:, j]
             psi_jx = np.zeros(x.shape, complex)
             # for each H.O. basis vector relevant to the filtered and sorted eigenvectors
-            
             for n in range(N):
                 psi_jx += d[n] * PSI_ns[n]
                 # normalise
@@ -85,15 +91,26 @@ def spatial_wavefunctions(N, x, epsilons, evals, evects):
 
             eigenstates.append(psi_jx)
 
-        plt.plot(x, np.real(eigenstates[0]), "-", color='blue', linewidth=0.5, label=r"Re($\psi_1$)")
-        plt.plot(x, np.imag(eigenstates[0]), "--", color='blue', linewidth=0.5, label=r"Im($\psi_1$)")
-        plt.plot(x, np.real(eigenstates[1]), "-", color='orange', linewidth=0.5, label=r"Re($\psi_2$)")
-        plt.plot(x, np.imag(eigenstates[1]), "--", color='orange', linewidth=0.5, label=r"Im($\psi_2$)")
-        plt.legend()
+        fig, ax = plt.subplots()
+        plt.plot(x, np.real(eigenstates[0]), "-", color='blue', linewidth=1, label=fr"Re($\psi_1$)")
+        plt.plot(x, np.imag(eigenstates[0]), "--", color='blue', linewidth=1, label=fr"Im($\psi_1$)")
+        plt.plot(x, np.real(eigenstates[1]), "-", color='orange', linewidth=1, label=fr"Re($\psi_2$)")
+        plt.plot(x, np.imag(eigenstates[1]), "--", color='orange', linewidth=1, label=fr"Im($\psi_2$)")
+        plt.legend(loc="upper right")
         plt.xlabel(r'$x$')
         plt.ylabel(r'$ \psi_{n}$')
+        textstr = '\n'.join((
+            fr'$E_1 = {eigenvalues[0]:.03f}$',
+            fr'$E_2 = {eigenvalues[1]:.03f}$',
+            fr'$ϵ = {ϵ:.03f}$'
+            ))
+
+        # place a text box in upper left in axes coords
+        ax.text(0.02, 0.99, textstr, transform=ax.transAxes, verticalalignment='top')
+        # plt.show()
         plt.savefig(f"spatial_wavefunctions/wavefunction_{i:03d}.png")
         plt.clf()
+    return eigenvalues, eigenstates
 
             
 ####################### Function calls ##################################
@@ -107,7 +124,7 @@ delta_x = xs[1] - xs[0]
 
 evals, evects = linear_algebra(epsilons)
 
-spatial_wavefunctions(N, xs, epsilons, evals, evects)
+eigenvalues, eigenstates = spatial_wavefunctions(N, xs, epsilons, evals, evects)
 
 
 
