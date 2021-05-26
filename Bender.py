@@ -183,7 +183,7 @@ def figure_final_form():
     for E_ϵs in Energies_2:
         # print(E_ϵs)
         ϵ = np.linspace(0, 3, 30)
-        # plt.plot(ϵ, E_ϵs, "o-", color='k', markersize=1)
+        # plt.plot(ϵ, E_ϵs, "o-", color='k', markersize=1) # MARK OR UNMARK
 
     eigenvectors_list = []
     for i, ϵ in enumerate(epsilons):
@@ -191,42 +191,64 @@ def figure_final_form():
         eigenvalues, eigenvectors = linalg.eig(matrix)
         eigenvectors_list.append(eigenvectors)
 
+        # # full figure # MARK OR UNMARK
+        # positive_evals = [
+        #     i for i in eigenvalues if 0 < np.real(i) < 20 and abs(np.imag(i)) < 0.3
+        # ]
+
+        # # broken region
         positive_evals = [
-            i for i in eigenvalues if 0 < np.real(i) < 20 and abs(np.imag(i)) < 0.3
+            i for i in eigenvalues if 0 < np.real(i) < 20 and abs(np.imag(i)) < 6
         ]
+
         sorted_eigenvalues = sorted(positive_evals, key=lambda x: np.real(x))
         sorted_eigenvalues = sorted_eigenvalues[:11]
 
         ϵ_list = np.full(len(sorted_eigenvalues), ϵ)
 
-        # plt.plot(
-        #     ϵ_list,
-        #     np.real(sorted_eigenvalues),
-        #     marker='.',
-        #     linestyle='None',
-        #     color='k',
-        #     markersize=1,
-        # )
-        ## mask_imag = 1e-6 < abs(np.imag(sorted_eigenvalues))
-        ## plt.plot(
-        ##     ϵ_list[mask_imag],
-        ##     np.imag(sorted_eigenvalues)[mask_imag],
-        ##     marker='.',
-        ##     linestyle='None',
-        ##     color='r',
-        ##     markersize=1,
-        ## )
+        mask_imag = 1e-6 < abs(np.imag(sorted_eigenvalues))
+        plt.plot(
+            ϵ_list[mask_imag],
+            np.imag(sorted_eigenvalues)[mask_imag],
+            marker='.',
+            linestyle='None',
+            color='r',
+            markersize=1,
+        )
 
+        plt.plot(
+            ϵ_list,
+            np.real(sorted_eigenvalues),
+            marker='.',
+            linestyle='None',
+            color='k',
+            markersize=2.5,
+        )
+
+        mask_real = 1e-6 < abs(np.imag(sorted_eigenvalues))
+        plt.plot(
+            ϵ_list[mask_real],
+            np.real(sorted_eigenvalues)[mask_real],
+            marker='.',
+            linestyle='None',
+            color='xkcd:azure',
+            markersize=2,
+        )
+
+    # # full figure # MARK OR UNMARK
     # plt.axis(xmin=-1, xmax=3, ymin=0, ymax=20)
-    # plt.axvline(-0.57793, color='orange', linestyle=':', label="ϵ = -0.57793")
     # plt.axvline(0, color='purple', linestyle=':', label="PT-symmetry breaking")
     # plt.legend()
-    # plt.xlabel("ϵ")
-    # plt.ylabel("E")
-    # plt.savefig("NHH_eigenvalues.png")
-    # plt.show()
-    return np.array(eigenvectors_list)
 
+    # # only broken symmetry region
+    plt.axis(xmin=-1, xmax=0, ymin=-2, ymax=12)
+    plt.axhline(0, color='grey', linestyle='-')
+    
+    plt.xlabel("ϵ")
+    plt.ylabel("E")
+    plt.savefig("NHH_eigenvalues.png")
+    plt.show()
+    return np.array(eigenvectors_list)
 
 coefficients = figure_final_form()
 
@@ -250,7 +272,7 @@ def spatial_wavefunctions(N, x, epsilons):
             for n in range(N):  # for each H.O. basis vector
                 psi_jx += d[n] * PSI_ns[n]
                 plt.plot(x, abs(psi_jx) ** 2)
-                plt.savefig(f"spatial_wavefunctions/wavefunction_{ϵ}_{n:03d}.png")
+                # plt.savefig(f"spatial_wavefunctions/wavefunction_{ϵ}_{n:03d}.png")
                 plt.clf()
             eigenstates.append(psi_jx)
 
@@ -259,9 +281,28 @@ def spatial_wavefunctions(N, x, epsilons):
 N = 100
 epsilons = np.linspace(-1.0, 0, N)
 xs = np.linspace(-20, 20, 1024)
-# spatial_wavefunctions(N, xs, epsilons)
+spatial_wavefunctions(N, xs, epsilons)
 
 ####################### Eigenvectors plot ##################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ###################### Runge-Kutta test call ###############################
