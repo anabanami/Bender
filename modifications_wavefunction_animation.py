@@ -104,7 +104,8 @@ def spatial_wavefunctions(N, x, epsilons, evals, evects):
 
         plt.legend(loc="upper right")
         plt.xlabel(r'$x$')
-        plt.ylabel(r'$ \psi_{n}$')
+        plt.ylabel(r'$ |\psi_{n}|^2$')
+        # plt.ylabel(r'$ \psi_{n}$'))
         textstr = '\n'.join((
             fr'$E_1 = {eigenvalues[0]:.03f}$',
             fr'$E_2 = {eigenvalues[1]:.03f}$',

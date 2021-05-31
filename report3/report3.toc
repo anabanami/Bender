@@ -1,0 +1,21 @@
+\babel@toc {english}{}
+\contentsline {section}{\numberline {1}Introduction}{3}%
+\contentsline {subsection}{\numberline {1.1}Good ol' quantum mechanics}{3}%
+\contentsline {subsection}{\numberline {1.2}Adopting a new assumption}{3}%
+\contentsline {subsection}{\numberline {1.3}\textit {PT}-symmetric quantum mechanics}{3}%
+\contentsline {subsection}{\numberline {1.4}Nerd-Sniped}{5}%
+\contentsline {section}{\numberline {2}My aborted simulation}{6}%
+\contentsline {subsection}{\numberline {2.1}Methods}{6}%
+\contentsline {subsection}{\numberline {2.2}Results}{7}%
+\contentsline {section}{\numberline {3}Reproducing Bender's figure}{8}%
+\contentsline {subsection}{\numberline {3.1}Methods}{8}%
+\contentsline {subsubsection}{\numberline {3.1.1}A region of unbroken \textit {PT}-symmetry}{8}%
+\contentsline {subsubsection}{\numberline {3.1.2}A region of broken \textit {PT}-symmetry}{8}%
+\contentsline {subsection}{\numberline {3.2}Results}{8}%
+\contentsline {subsubsection}{\numberline {3.2.1}WKB approximation}{8}%
+\contentsline {subsubsection}{\numberline {3.2.2}Diagonalisation}{8}%
+\contentsline {section}{\numberline {4}Discussion}{8}%
+\contentsline {subsection}{\numberline {4.1}\textit {PT}-symmetry breaking}{8}%
+\contentsline {subsection}{\numberline {4.2}Exceptional points}{9}%
+\contentsline {section}{\numberline {5}Conclusion}{9}%
+\contentsline {section}{\numberline {6}Acknowledgements}{9}%
