@@ -72,9 +72,15 @@ It is the one that is the most adaptable to change.''}\bigbreak
 
 \tableofcontents % Prints the main table of contents
 
+\vspace{20cm}
+
 \listoffigures % Prints the list of figures
 
+\vspace{20cm}
+
 % \listoftables % Prints the list of tables
+
+
 
 %----------------------------------------------------------------------------------------
 %  CONTENTS
@@ -272,11 +278,7 @@ The defining principle behind Figure~\ref{fig:Benders} on page~\pageref{fig:Bend
 where $\epsilon$ is a real parameter. The introduction of the real parameter $\epsilon$ acts in such a way that as $\epsilon$ increases from $0$, the Hamiltonian is no longer Hermitian but its \PT-symmetry is preserved. This occurs because the quantity $(i\hat{x})$ is \PT-invariant\cite{BenderPT}\cite{Bender}.\\ 
 To reproduce Bender's Figure (Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}) I had to solve the time independent eigenvalue problems associated with equation(\ref{eq:17}). For this I used two different mathematical techniques, since the reality of the spectrum for \PT-symmetric Hamiltonian systems is characterized by the commutation relation of the Hamiltonian in question and the \PT-operator. We describe the meaning of broken and unbroken \PT-symmetry as a conditional statement: \textit{If the Hamiltonian and the \PT-operator share all eigenstates, then the symmetry is unbroken, but if not all the eigenstates are simultaneously shared between the Hamiltonian and the \PT-operator then the symmetry is broken}\cite{BenderPT}\cite{Bender}. In other words, only if the \PT-symmetric Hamiltonian shares eigenstates with the \PT-operator, then the corresponding eigenvalues to those shared eigenstates are real-valued.
 
-\subsection{Methods}
-
 To formulate the eigenvalue problems for both methods used to find all the eigenvalues of equation (\ref{eq:17}), I split the problem into the expected parametric regions (as per Bender's descriptions) corresponding to \textit{unbroken} \PT-symmetry ($\epsilon \geq 0$) and \textit{broken} \PT-symmetry ($\epsilon < 0$).
-
-\subsubsection{A region of unbroken \PT-symmetry}
 
 When $\epsilon \geq 0$ the spectra are real, positive and discrete. Energy levels increase with increasing $\epsilon$.
 To solve the Schrödinger eigenvalue problem I write the Schrödinger equation in coordinate space.\\ The relevant operators in this space are
@@ -285,17 +287,25 @@ To solve the Schrödinger eigenvalue problem I write the Schrödinger equation i
 \end{align}
 where we want to treat the variable x as complex, which does not modify the commutation relation $[\hat{x}, \hat{p}] = i\hbar$. Then the eigenvalue problem takes the form
 \begin{equation}\label{eq:19}
--\psi'' + \hat{x}^2 (i \hat{x})^{\epsilon} \psi = E \psi
+-\psi'' + \hat{x}^2 (i \hat{x})^{\epsilon} \psi = E \psi.
 \end{equation}
-A question remains, what are the boundary conditions for this problem? The boundary conditions depend on the deformation parameter $\epsilon$ \cite{BenderPT}\cite{Bender}\cite{Bender2017}. Equation (\ref{eq:19}) cannot be solved exactly using analytic methods for $\epsilon \neq 0$, therefore my approach is based on numerics. From reference \cite{Bender} I learned that the WKB phase integral approximation can be used to find very a accurate approximation to the real eigenvalues visible in the \textit{unbroken} \PT-symmetry region ($\epsilon \geq 0$) visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. 
-% \subsubsection{WKB approximation}
-% Solving the Schrödinger eigenvalue problem 
-% \begin{equation}
-% -\psi'' + V(x)\psi = E\psi
-% \end{equation}
-% where $V \rightarrow  \infty$ and $|x| \rightarrow \infty$ where we treat x as a complex variable, and calculate how the asymptotic form of the solutions change as they are traced around the complex plane\cite{Sorrell}. In other words, we are interested in learning how much phase is gained by traversing a contour in the complex plane from one of the roots of the equation $E = x^2(ix)^\epsilon$ to the other.
+Equation (\ref{eq:19}) cannot be solved exactly using analytic methods for $\epsilon \neq 0$, therefore my approach is numerical. From reference \cite{Bender} I learned that the WKB phase integral approximation can be used to find very a accurate approximation to the real eigenvalues visible in the \textit{unbroken} \PT-symmetry region ($\epsilon \geq 0$) visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. 
 
-% To find this phase this it is necessary to evaluate the integral known as the WKB phase integral quatization condition
+\subsection{Methods}
+
+\subsubsection{WKB approximation}
+To solve equation (\ref{eq:19}) I had to find out which were the boundary conditions for the problem. I learned from several sources that the boundary conditions depend on the deformation parameter $\epsilon$ \cite{BenderPT}\cite{Bender}\cite{Bender2017}. Since the eigenvalue problem can be conceptualised as a harmonic oscillator that has been deformed into the complex x-plane. Finding the solutions requires that I integrate equation (\ref{eq:19}) along a contour in the complex x-plane and that the solution be equal to zero at both ends of this contour\cite{BenderPT}. According to Bender, the eigenfunctions vanish exponentially in two angular sectors in the complex x-plane as $|x| \rightarrow \infty$. These sectors are called \textit{Stokes wedges}\cite{BenderPT}\cite{Bender}, in general centred about the origin in the complex x-plane and are defined as 
+\begin{align}
+&-\frac{1}{4} \pi  < \mathrm{arg}x < \frac{1}{4}\pi& &\mathrm{and}& &\frac{3}{4} \pi  < \mathrm{arg}x < \frac{5}{4}\pi& 
+\end{align}
+
+\subsection{Results}
+
+\subsubsection{The region of unbroken \PT-symmetry}
+
+
+I calculated how much phase is gained by traversing a contour in the complex plane from one of the roots of the equation $E = x^2(ix)^\epsilon$ to the other.
+
 
 % \begin{equation}
 % (n+ \frac{1}{2})\pi = \int_{x_-}^{x^+} dx \sqrt{E - x^2(ix)^\epsilon}.
@@ -308,11 +318,11 @@ A question remains, what are the boundary conditions for this problem? The bound
 % Even though I encountered some difficulties, in the end my implementation of the WKB method returned results that were in agreement with those reported in Bender's paper. Demonstrating that the WKB methodology gives a very accurate approximation to the exact eigenvalues reported by Bender (obtained by using Runge-Kutta) for the case of the unbroken symmetry sector of the spectrum in figure 1. (ie. when $\epsilon > 0$).
 
 
-\subsubsection{A region of broken \PT-symmetry}
+\subsubsection{The region of broken \PT-symmetry}
 
 \subsection{Results}
 
-\subsubsection{WKB approximation}
+
 
 % \begin{equation}
 % (n+ \frac{1}{2})\pi = \int_{x_-}^{x^+} dx \sqrt{E - x^2(ix)^\epsilon}.
