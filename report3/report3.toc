@@ -10,3 +10,6 @@
 \contentsline {section}{\numberline {3}Reproducing Bender's figure}{9}%
 \contentsline {subsection}{\numberline {3.1}Methods}{10}%
 \contentsline {subsubsection}{\numberline {3.1.1}WKB approximation}{10}%
+\contentsline {subsubsection}{\numberline {3.1.2}Matrix Diagonalisation}{11}%
+\contentsline {subsection}{\numberline {3.2}Results}{11}%
+\contentsline {subsubsection}{\numberline {3.2.1}The region of unbroken \textit {PT}-symmetry}{11}%

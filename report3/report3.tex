@@ -228,7 +228,7 @@ I must be honest, I had a couple of ideas for my project but I only achieved one
 
 My investigations of non-Hermitian Hamiltonians were pivoted by trying to understand what was going on in the figure above. My approach to understanding was based on trying to replicate the figure itself as it portrays a very clear visualisation of \PT-symmetry breaking (occurring at $\epsilon = 0$) and its effect on the energy spectrum of non-Hermitian \PT-symmetric Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. It can be seen in this figure that the reality and boundedness from below of the eigenvalues is maintained as the perturbation parameter $\epsilon$ is varied.\\
 
-For my investigation of this figure, I had to solve the time independent eigenvalue problems associated with a $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. For this I used two different mathematical techniques, since the reality of the spectrum for \PT-symmetric Hamiltonian systems is characterized by the commutation relation of the Hamiltonian in question and the \PT-operator. The meaning of broken and unbroken \PT-symmetry is defined as a conditional statement: \textit{If the Hamiltonian and the \PT-operator share all eigenstates, then the symmetry is unbroken, but if not all the eigenstates are simultaneously shared between the Hamiltonian and the \PT-operator then the symmetry is broken}\cite{BenderPT}\cite{Bender}. In other words, only if the \PT-symmetric Hamiltonian shares eigenstates with the \PT-operator, then the corresponding eigenvalues to those shared eigenstates are real-valued.
+For my investigation of this figure, I had to solve the time independent eigenvalue problems associated with a $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. For this I used two different mathematical techniques, since the reality of the spectrum for \PT-symmetric Hamiltonian systems is characterized by the commutation relation of the Hamiltonian in question and the \PT-operator. Because the \PT-operator is non-linear, the eigenstates of the Hamiltonian may or may not be eigenstates of the \PT-operator. We can establish the meaning of broken and unbroken \PT-symmetry as a conditional statement: \textit{If the Hamiltonian and the \PT-operator share all eigenstates, then the symmetry is unbroken, but if not all the eigenstates are simultaneously shared between the Hamiltonian and the \PT-operator then the symmetry is broken}\cite{BenderPT}\cite{Bender}. In other words, only if the \PT-symmetric Hamiltonian shares eigenstates with the \PT-operator, then the corresponding eigenvalues to those shared eigenstates are real-valued.
 
 Replicating this figure took most of my time during the semester, and so I was unable to develop my other investigations further. Nevertheless, for the sake of completeness, I will describe in section 2 what my other project idea was.
 
@@ -320,29 +320,38 @@ The explicit formula I used in my numerical calculation of the eigenvalues is th
 \end{equation}
 as per Bender's instructions in ``Making sense of non-Hermitian Hamiltonians''. the left hand side of equation (\ref{eq:23}) is the quantization condition on the accumulated phase for the WKB integral that defines the energy.\\
 
+Since it does not make sense to compute a complex integral in Python, I proceeded with my numerics by implementing a change of variables that shifted my integration limits and domain from the complex plane to the real line. I did this taking advantage of the symmetry of the set-up. Because both turning points $x_{\pm}$ have equal imaginary parts, I subtracted the imaginary part multiplied by $i$ from both of the integration limits and also added it to the complex $x$ value present in the integrand as an offset
+\begin{equation} \label{eq:24}
+\begin{split}
+&x_{-}\rightarrow x_{-}' = x_{-} - i \mathrm{Im}(x_{-}),\\
+&x_{+}\rightarrow x_{+}' = x_{+} - i \mathrm{Im}(x_{-}),\\
+&x\rightarrow x = x' - i \mathrm{Im}(x_{-}),\\
+&dx\rightarrow dx'.
+\end{split}
+\end{equation}
+After my change of variables, I was able to calculate the WKB integral by writing my own integration function and using the \textit{quad()} module for integration in Python. I wrote a modified function that calculated integral for the real part and the integral for imaginary part of the integrand separately and set the function to return the total WKB integral as a linear combination of the real plus the imaginary part multiplied by $i$. I named my function: \textit{complex\_quad()}.\\
+I was able to verify the quantisation condition in equation (\ref{eq:23}) by taking the difference of the expression dependent of n in the left hand side of equation (\ref{eq:23}) and the resulting complex integral I calculated by using my \textit{complex\_quad()} function which corresponds to the right hand side of equation (\ref{eq:23}). I used this difference equation to optimize the resulting energy eigenvalue from my \textit{complex\_quad()} function. For the optimization I used my own modified version of the root finding algorithm module \textit{scipy.optimize.fsolve()}. My modifications simply allowed me to use the algorithm for both the real and imaginary part of my results, and to combine them similarly to what I did when calculating the real and imaginary parts of the complex integral as two separate integrals.
 
 
-% \subsubsection{Matrix diagonalisation}
+\subsubsection{Matrix Diagonalisation}
 
 
-% \subsection{Results}
+\subsection{Results}
 
-% \subsubsection{The region of unbroken \PT-symmetry}
+\subsubsection{The region of unbroken \PT-symmetry}
+Using the WKB integral quantisation condition I calculated how much phase is gained by traversing a contour in the complex plane from one of the roots of the equation $E = x^2(ix)^\epsilon$ to another. Here I compare my numerical results for the energies pertaining to the unbroken \PT-symmetry region $(\epsilon \geq 0)$ in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders} with the energies reported in Bender's paper ``Making sense of non-Hermitian Hamiltonians'' by plotting my obtained energy values together with Bender's calculated numerical energies, Bender's values are reported to have been obtained by the WKB integral and by Runge-Kutta.
 
+\begin{Figure}
+\centering
+\includegraphics[width=\linewidth]{comparing_to_bender(4).pdf}
+\captionof{figure}{From left to right the image is zoomed. Here I demonstrate that my WKB energy results (visible as the blue plot) for the case on the non-Hermitian, \PT-symmetric Hamiltonian $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})$ (ie. the case: $\epsilon = 1$) are in agreement with the energy values reported in Bender's work. Bender's results were obtained by the Runge-Kutta method (orange plot) and by the WKB approximation (green plot). All the energies (energy is the vertical axis) presented in this plot were obtained using $n \in [0,9]$. $n$ is visible as the horizontal axis for this plot.}
+\end{Figure}
 
-% I calculated how much phase is gained by traversing a contour in the complex plane from one of the roots of the equation $E = x^2(ix)^\epsilon$ to the other.
-
-
-% % \begin{equation}
-% % (n+ \frac{1}{2})\pi = \int_{x_-}^{x^+} dx \sqrt{E - x^2(ix)^\epsilon}.
-% % \end{equation}
-
-% % I reproduced the results reported in Bender's paper by using the WKB approximation.
-
-% % I had to devise a way to write the complex integral using Python and this required a change of variables that shifted my integration limits and domain from the complex plane to the real line. I did this taking advantage of the symmetry of the setup by subtracting as an offset the imaginary part multiplied by $i$ of one of the integration limits from both of the limits and from the integrand. 
-
-% % Even though I encountered some difficulties, in the end my implementation of the WKB method returned results that were in agreement with those reported in Bender's paper. Demonstrating that the WKB methodology gives a very accurate approximation to the exact eigenvalues reported by Bender (obtained by using Runge-Kutta) for the case of the unbroken symmetry sector of the spectrum in figure 1. (ie. when $\epsilon > 0$).
-
+\begin{Figure}
+\centering
+\includegraphics[width=0.5\linewidth]{unbroken_symmetry.pdf}
+\captionof{figure}{My implementation of the WKB method on the family of non-Hermitian, \PT-symmetric Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for $\epsilon \geq 0$. My energy values (energy is the vertical axis) were in agreement with those visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. All the energies presented in this plot are real valued, and they are bounded below by the eigenvalues corresponding to the ground-state visible here as a blue plot.The changing colours of every plot represent increasing values of n corresponding to the left hand side expression in the WKB quantisation condition: \mbox{$\left (n + \frac{1}{2} \right )\pi$}. The horizontal axis is the range of values $0 \leq \epsilon \leq 3$.}
+\end{Figure}
 
 % \subsubsection{The region of broken \PT-symmetry}
 
@@ -369,7 +378,6 @@ as per Bender's instructions in ``Making sense of non-Hermitian Hamiltonians''. 
 
 
 
-
 % \section{Discussion}
 
 % \subsection{Stokes wedges and boundary conditions}
@@ -384,6 +392,7 @@ as per Bender's instructions in ``Making sense of non-Hermitian Hamiltonians''. 
 
 % there is no continuous path joining the limits of integration when $\epsilon \leq 0$ therefore the WKB approximation cannot be used in the region corresponding to Broken \PT-symmetry.
 
+% Because of several coding errors I made. I was able to explore certain aspects of the WKB integration method. I explored the integration contour for the WKB integral by plotting it and I verified that the turning points indeed form a closed loop of integration which completes the analogy of the classical interpretation of the turning points as the finishing and starting points of a moving classical particle
 
 
 
