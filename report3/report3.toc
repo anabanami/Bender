@@ -6,17 +6,7 @@
 \contentsline {subsection}{\numberline {1.4}Nerd-Sniped}{6}%
 \contentsline {section}{\numberline {2}My aborted simulation}{7}%
 \contentsline {subsection}{\numberline {2.1}Methods}{7}%
-\contentsline {subsection}{\numberline {2.2}Results}{8}%
+\contentsline {subsection}{\numberline {2.2}Results}{9}%
 \contentsline {section}{\numberline {3}Reproducing Bender's figure}{9}%
-\contentsline {subsection}{\numberline {3.1}Methods}{9}%
-\contentsline {subsubsection}{\numberline {3.1.1}WKB approximation}{9}%
-\contentsline {subsection}{\numberline {3.2}Results}{10}%
-\contentsline {subsubsection}{\numberline {3.2.1}The region of unbroken \textit {PT}-symmetry}{10}%
-\contentsline {subsubsection}{\numberline {3.2.2}The region of broken \textit {PT}-symmetry}{10}%
-\contentsline {subsection}{\numberline {3.3}Results}{10}%
-\contentsline {subsubsection}{\numberline {3.3.1}Diagonalisation}{10}%
-\contentsline {section}{\numberline {4}Discussion}{10}%
-\contentsline {subsection}{\numberline {4.1}\textit {PT}-symmetry breaking}{10}%
-\contentsline {subsection}{\numberline {4.2}Exceptional points}{10}%
-\contentsline {section}{\numberline {5}Conclusion}{10}%
-\contentsline {section}{\numberline {6}Acknowledgements}{10}%
+\contentsline {subsection}{\numberline {3.1}Methods}{10}%
+\contentsline {subsubsection}{\numberline {3.1.1}WKB approximation}{10}%
