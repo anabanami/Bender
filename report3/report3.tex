@@ -285,7 +285,7 @@ To solve the Schrödinger eigenvalue problem I write the Schrödinger equation i
 \begin{align} \label{eq:18}
 \hat{x}& \rightarrow x,  &\hat{p}\rightarrow -i \frac{d}{dx},
 \end{align}
-where we want to treat the variable x as complex, which does not modify the commutation relation $[\hat{x}, \hat{p}] = i\hbar$. Then the eigenvalue problem takes the form
+where we want to treat the variable x as complex, which does not modify the commutation relation $[\hat{x}, \hat{p}] = i\hbar$. Without loss of generality we can use natural length scales $(\hbar = 1, m = \frac{1}{2})$ so the eigenvalue problem takes the form
 \begin{equation}\label{eq:19}
 -\psi'' + x^2 (i x)^{\epsilon} \psi = E \psi.
 \end{equation}
@@ -329,11 +329,49 @@ Since it does not make sense to compute a complex integral in Python, I proceede
 &dx\rightarrow dx'.
 \end{split}
 \end{equation}
-After my change of variables, I was able to calculate the WKB integral by writing my own integration function and using the \textit{quad()} module for integration in Python. I wrote a modified function that calculated integral for the real part and the integral for imaginary part of the integrand separately and set the function to return the total WKB integral as a linear combination of the real plus the imaginary part multiplied by $i$. I named my function: \textit{complex\_quad()}.\\
+After my change of variables, I was able to calculate the WKB integral by writing my own integration function and using the \textit{quad()} module for integration in Python. I wrote a modified function that calculated integral for the real part and the integral for imaginary part of the integrand separately and set the function to return the total integral as a linear combination of the real plus $i$ times the imaginary part. I named my function: \textit{complex\_quad()}.\\
 I was able to verify the quantisation condition in equation (\ref{eq:23}) by taking the difference of the expression dependent of n in the left hand side of equation (\ref{eq:23}) and the resulting complex integral I calculated by using my \textit{complex\_quad()} function which corresponds to the right hand side of equation (\ref{eq:23}). I used this difference equation to optimize the resulting energy eigenvalue from my \textit{complex\_quad()} function. For the optimization I used my own modified version of the root finding algorithm module \textit{scipy.optimize.fsolve()}. My modifications simply allowed me to use the algorithm for both the real and imaginary part of my results, and to combine them similarly to what I did when calculating the real and imaginary parts of the complex integral as two separate integrals.
 
+\subsubsection{Matrix equations}
+The process I followed to solve equation (\ref{eq:19}) for the broken \PT-symmetry region (the region corresponding to values of $\epsilon < 0$) was a lot more free form. Bender's paper ``Making sense of non-Hermitian Hamiltonians'' did not go into details about the behaviour of the spectrum this region nor gave any advice on how to solve the eigenvalue problem for the parametric Hamiltonians with $\epsilon < 0$ values. I chatted to my supervisors a lot when I was working on this and we settled on me attempting to re-write equation (\ref{eq:19}) as a matrix equation using the family of harmonic oscillators eigenstates written in the x-spatial coordinate the basis. These functions are generally written as
+\begin{align} \label{eq:25}
+&\psi_n(x)= \frac{1}{\sqrt{2^n n!}} 
+\left ( \frac{m \omega}{\pi \hbar}\right )^{1/4} e^{\frac{-m \omega x^2}{2 \hbar}}
+H_n \left (\sqrt{\frac{m \omega}{\hbar}}x\right ),  &n = 0, 1, 2, \dots
+\end{align}
+where the functions $H_n(z)$ are the physicists' Hermite polynomials
+\begin{equation} \label{eq:26}
+H_n(z) = (-1)^n e^{z^2} \frac{d^n}{dz^n}\left( e^{-z^2}\right).
+\end{equation}
+In equation (\ref{eq:19}) I have used natural length scales, ie. $\hbar = 1, m = \frac{1}{2}$. To simplify my states further, I set the frequency in my harmonic oscillator basis states to $\omega = 2$ to obtain
+\begin{equation} \label{eq:27}
+\psi_n(x)= \frac{1}{\sqrt{2^n n!}} 
+\left ( \frac{1}{\pi}\right )^{1/4} e^{\frac{-x^2}{2}}
+H_n (x).
+\end{equation}
+To numerically solve my matrix equation I first needed to calculate $N$ (I chose $N = 100$) harmonic oscillator basis states as they are written in equation (\ref{eq:27}), and then I used them to form the matrix elements 
+\begin{equation}\label{eq:28}
+\left \langle m \left |\hat{H} \right|n \right \rangle = \int_{-b}^{b} \psi_m(x)^* \left (  - \frac{d^2}{dx^2} + x^2(ix)^{\epsilon}\right ) \psi_n(x) dx
+\end{equation}
+where m and n are the indices for the harmonic oscillator states. Both $m, n$ range from 0 to 100, and $\pm b$ are the integration limits which I will define in the next section. Using these elements I constructed one hundred Hamiltonian matrices. Each Hamiltonian matrix corresponds to a different $\epsilon$ value in a range of one hundred values between 0 to -1. 
+After the matrices were constructed I simply used the \textit{scipy.linalg.eig()} module in Python to solve each eigenvalue problem for my set of $100\times100$ Hamiltonian matrices. With this module I found the eigenvalues and the right eigenvectors for each matrix.
 
-\subsubsection{Matrix Diagonalisation}
+\subsubsection{Matrix elements}
+Constructing the integrand in equation (\ref{eq:28}), ie. \mbox{$\psi_m(x)^* \left (  - \frac{d^2}{dx^2} + x^2(ix)^{\epsilon}\right ) \psi_n(x)$} was computationally expensive, because it required the calculation of the harmonic oscillator basis states $\psi_m$ and $\psi_n$, and that of the Hamiltonian. To numerically calculate the second order derivative in the Hamiltonian I used a finite centred differences approximation
+\begin{equation}\label{eq:29}
+\frac{d^2 \psi_n(x)}{dx^2} = \frac{\psi_n(x + h) - 2 \psi_n(x) + \psi_n(x - h)}{h^2}
+\end{equation}
+I calculated $\psi_m(x)$ once for every integrand, but I calculated 3 different $\psi_n(x)$ for my centred finite differences, and this made my code very slow.\\
+
+% \subsubsection{Hermite functions}
+% There might be an issue with the size of the state given that I  am using 2**n and an n factorial in the denominator. I need to verify that sc.eval_hermite(n, np.sqrt(1/2) * x does actually give me something large to scale things adequately for large n.
+% I need to think about things for a bit.
+
+An important part of my integral calculations was the need to choose the integration region for each matrix element. I needed the largest possible region without compromising the time spent for each element integration and so the integration bounds must depend on the state with the highest energy value used for each of the one hundred elements calculated. In addition, I needed to make sure the states went to zero for large x-values in order to take advantage of the basis states. Therefore I set the limits of integration to be much larger than the turning points of the harmonic oscillator so I was able to guarantee that the states have exponentially decayed to zero at the bounds of my integration. I settled the boundaries by trial and error and determined that the values $b  = \pm 10\sqrt{4 \mathrm{max}(m,n) + 2}$ were adequate.\\\\
+To iteratively calculate the matrix elements as they are written in equation (\ref{eq:28}) I once again, used the \textit{complex\_quad()} function I wrote myself since the integrand of each matrix element integral was complex-valued. My modified function calculates the integral for the real part and the integral for imaginary part of the integrand separately and it returns the total integral as a linear combination of the real plus $i$ times the imaginary part.\\
+\\Finally, my code repeated this procedure and calculated one hundred $100\times100$ matrices. One matrix for each $\epsilon$ in my discretised region for $\epsilon$ values between 0 and -1.
+
+
 
 
 \subsection{Results}
@@ -349,43 +387,35 @@ Using the WKB integral quantisation condition I calculated how much phase is gai
 
 \begin{Figure}
 \centering
-\includegraphics[width=0.5\linewidth]{unbroken_symmetry.pdf}
+\includegraphics[width=0.75\linewidth]{unbroken_symmetry.pdf}
 \captionof{figure}{My implementation of the WKB method on the family of non-Hermitian, \PT-symmetric Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for $\epsilon \geq 0$. My energy values (energy is the vertical axis) were in agreement with those visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. All the energies presented in this plot are real valued, and they are bounded below by the eigenvalues corresponding to the ground-state visible here as a blue plot.The changing colours of every plot represent increasing values of n corresponding to the left hand side expression in the WKB quantisation condition: \mbox{$\left (n + \frac{1}{2} \right )\pi$}. The horizontal axis is the range of values $0 \leq \epsilon \leq 3$.}
 \end{Figure}
 
-% \subsubsection{The region of broken \PT-symmetry}
+\subsubsection{The region of broken \PT-symmetry}
+
+\begin{Figure}
+ \centering
+ \includegraphics[width=0.75\linewidth]{broken_region.pdf}
+ \captionof{figure}{This plot is an extension of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. Here I display the eigenvalues of the parametric family of \PT-symmetric,  non-hermitian Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for $\epsilon \leq 0 $. This figure depicts fully real eigenvalues (black dots) and the points at which the eigenvalues become degenerate and then form complex-conjugate pairs. The real parts of these pairs of eigenvalues (blue dots) initially decrease as $\epsilon$ decreases but blow up suddenly as $\epsilon$ approaches -1. The imaginary parts of the eigenvalue pairs (red dots) remain finite and appear to decay to zero at  $\epsilon = -1$.}
+\end{Figure}
 
 
-% % \begin{equation}
-% % (n+ \frac{1}{2})\pi = \int_{x_-}^{x^+} dx \sqrt{E - x^2(ix)^\epsilon}.
-% % \end{equation}
-
-% % I reproduced the results reported in Bender's paper by using the WKB approximation.
-
-% % \begin{Figure}
-% %  \centering
-% %  \includegraphics[width=\linewidth]{WKB_agreement.png}
-% %  \captionof{figure}{From left to right the image is zoomed. Here I demonstrate that my WKB results (blue plot) are in agreement with the values reported in Bender's work. Bender's results were obtained by the Runge-Kutta method (orange plot) and by the WKB approximation (green plot). All the energies presented in this plot were obtained using 
-% % $\epsilon = 1$ and $n \in [0,9]$.}
-% % \end{Figure}
-
-% % \begin{Figure}
-% %  \centering
-% %  \includegraphics[width=0.5\linewidth]{unbroken_symmetry_spectrum.png}
-% %  \captionof{figure}{Unbroken \PT-symmetry region of the energy spectrum for the parametric family of Hamiltonians
-% %  \mbox{$\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^\epsilon$} obtained using the WKB approximation.}
-% % \end{Figure}
+\subsubsection{The final result}
+\begin{Figure}
+ \centering
+ \includegraphics[width=\linewidth]{my_figure_1.pdf}
+ \captionof{figure}{My rendition of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. This figure has all the same characteristics as Bender's original figure.
+ All energies presented in this plot are real valued. The $\epsilon$ values are visible in the horizontal axis, while the vertical axis is the energy eigenvalues for each Hamiltonian in the parametric family $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. The vertical dotted green line corresponds to the value $\epsilon = 0$, which itself corresponds to the 1D classical harmonic oscillator Hamiltonian $\hat{H} = \hat{p}^2 + \hat{x}^2$. Above the value $\epsilon = 0$ all values in the spectra are fully real, positive and discrete. Energy levels increase with increasing $\epsilon$. In $-1 \leq \epsilon \leq 0$ region there is a finite number of real positive eigenvalues and an infinite number of complex-conjugate pairs of eigenvalues (the complex values are not depicted in this figure). The number of real eigenvalues decreases as $\epsilon$ decreases from 0 to -1 , for $\epsilon$ values that are more negative than the value $\epsilon = -0.57793$ the only remaining real eigenvalue corresponds to the ground-state energy. At the value $\epsilon = -1$ the spectrum is null, as all eigenvalues diverge towards positive infinity.}
+\end{Figure}
 
 
+\section{Discussion}
+\blindtext
 
-% \section{Discussion}
-
-% \subsection{Stokes wedges and boundary conditions}
-
-
-% \subsection{\PT-symmetry breaking}
+\subsection{Stokes wedges and boundary conditions}
 
 
+\subsection{\PT-symmetry breaking}
 
 % The known Gaussian-behaviour of the solutions of the undeformed harmonic oscillator, is preserved as the integration contour is deformed into the complex x-plane....
 % As $\epsilon$ becomes negative... read page 79 onward
@@ -395,8 +425,21 @@ Using the WKB integral quantisation condition I calculated how much phase is gai
 % Because of several coding errors I made. I was able to explore certain aspects of the WKB integration method. I explored the integration contour for the WKB integral by plotting it and I verified that the turning points indeed form a closed loop of integration which completes the analogy of the classical interpretation of the turning points as the finishing and starting points of a moving classical particle
 
 
+% try remained con I had an idea for developing the numerics of the method, my idea was based on the shooting method\cite{N_R} but this idea was too difficult to implement given that I was dealing with a complex equation, and so it was not exactly clear to me how I should implement it. 
 
-% \subsection{Exceptional points}
+
+% If I increase N from the test value N = 5 then I will get more resolution in Harmonic oscillator space.
+% The more eigenstates I use the more degrees of freedom I have which means the more accurate I am in my calculation of the eigenenergies of the non-Hermitian Hamiltonian.
+% The thing is that if I increase the number of states used to make my matrix the number of eigenvalues will increase linearly with N. 
+% I only want to have the first 10 or so eigenvalues :/
+% In addition the eigenvalues in my output are mixed up in a real and complex eigenvalues list.
+% So I will have to separate them and sort the real ones in order with increasing energy. To later plot only the lowest ones.
+
+% How big are the parts used in 
+% psi_blank(x) ~ 2**(-1/2 * (n + 3/2)) * np.pi**-3/4 * n**(-1/2 - n) * np.exp(n - (x**2) / 4) * sc.eval_hermite(n, np.sqrt(1/2) * x)
+%HBAUKES STUFFFF
+
+\subsection{Exceptional points}
 % % Square-root singularities are often called exceptional points. In general, eigenvalues cross (that is, they become degenerate) at exceptional points, the order of the degeneracy depends on the number of coalescent eigenvalues at that point. An exceptional point also marks the boundary between broken and unbroken \PT- symmetric phases\cite{BenderPT}.
 
 % %The conventional picture of quantum mechanics is that the energy levels are discrete and quantized functions of the real coupling constant $g$, However from the more general complex-variable perspective in which the coupling constant is complex, we can see that the energy levels of a hamiltonian are in fact continuous functions of the complex coupling constant $g$\cite{BenderPT}. 
@@ -408,17 +451,13 @@ Using the WKB integral quantisation condition I calculated how much phase is gai
 
 
 
+\section{Conclusion}
+\blindtext
 
+\section{Acknowledgements}
 
-
-
-% \section{Conclusion}
-
-
-% \section{Acknowledgements}
-
-
-% % \section{Appendix}
+\section{Appendix}
+I want to thank my supervisors Jesper and Meera for giving me their time and for guiding me through the semester with their ideas and suggestions. I truly enjoyed all of the moments when we met to discuss physics and other topics. I also want to thank Daniel Price for giving me the opportunity to try out research in a formal setting by accepting my request to join this research unit and for being so attentive and responsive to my questions. Lastly, I want to thank my partner Chris for being an endless source of inspiration, helpful advice and for all our interesting rants and discussions. 
 % %----------------------------------------------------------------------------------------
 % %   ABBREVIATIONS
 % %----------------------------------------------------------------------------------------
