@@ -333,7 +333,7 @@ After my change of variables, I was able to calculate the WKB integral by writin
 I was able to verify the quantisation condition in equation (\ref{eq:23}) by taking the difference of the expression dependent of n in the left hand side of equation (\ref{eq:23}) and the resulting complex integral I calculated by using my \textit{complex\_quad()} function which corresponds to the right hand side of equation (\ref{eq:23}). I used this difference equation to optimize the resulting energy eigenvalue from my \textit{complex\_quad()} function. For the optimization I used my own modified version of the root finding algorithm module \textit{scipy.optimize.fsolve()}. My modifications simply allowed me to use the algorithm for both the real and imaginary part of my results, and to combine them similarly to what I did when calculating the real and imaginary parts of the complex integral as two separate integrals.
 
 \subsubsection{Matrix equations}
-The process I followed to solve equation (\ref{eq:19}) for the broken \PT-symmetry region (the region corresponding to values of $\epsilon < 0$) was a lot more free form. Bender's paper ``Making sense of non-Hermitian Hamiltonians'' did not go into details about the behaviour of the spectrum this region nor gave any advice on how to solve the eigenvalue problem for the parametric Hamiltonians with $\epsilon < 0$ values. I chatted to my supervisors a lot when I was working on this and we settled on me attempting to re-write equation (\ref{eq:19}) as a matrix equation using the family of harmonic oscillators eigenstates written in the x-spatial coordinate the basis. These functions are generally written as
+The process I followed to solve equation (\ref{eq:19}) for the broken \PT-symmetry region (the region corresponding to values of $\epsilon < 0$) was a lot more free form. Bender's paper ``Making sense of non-Hermitian Hamiltonians'' did not go into details about the behaviour of the spectrum this region nor gave any advice on how to solve the eigenvalue problem for the parametric Hamiltonians with $\epsilon < 0$ values. I chatted to my supervisors a lot when I was working on this and we settled on me attempting to re-write equation (\ref{eq:19}) as a matrix equation using the family of harmonic oscillators eigenstates written in the x-spatial coordinate the basis. These functions are also known as Hermite functions and are generally written as
 \begin{align} \label{eq:25}
 &\psi_n(x)= \frac{1}{\sqrt{2^n n!}} 
 \left ( \frac{m \omega}{\pi \hbar}\right )^{1/4} e^{\frac{-m \omega x^2}{2 \hbar}}
@@ -357,28 +357,35 @@ where m and n are the indices for the harmonic oscillator states. Both $m, n$ ra
 After the matrices were constructed I simply used the \textit{scipy.linalg.eig()} module in Python to solve each eigenvalue problem for my set of $100\times100$ Hamiltonian matrices. With this module I found the eigenvalues and the right eigenvectors for each matrix.
 
 \subsubsection{Matrix elements}
-Constructing the integrand in equation (\ref{eq:28}), ie. \mbox{$\psi_m(x)^* \left (  - \frac{d^2}{dx^2} + x^2(ix)^{\epsilon}\right ) \psi_n(x)$} was computationally expensive, because it required the calculation of the harmonic oscillator basis states $\psi_m$ and $\psi_n$, and that of the Hamiltonian. To numerically calculate the second order derivative in the Hamiltonian I used a finite centred differences approximation
-\begin{equation}\label{eq:29}
-\frac{d^2 \psi_n(x)}{dx^2} = \frac{\psi_n(x + h) - 2 \psi_n(x) + \psi_n(x - h)}{h^2}
-\end{equation}
-I calculated $\psi_m(x)$ once for every integrand, but I calculated 3 different $\psi_n(x)$ for my centred finite differences, and this made my code very slow.\\
-
-% \subsubsection{Hermite functions}
-% There might be an issue with the size of the state given that I  am using 2**n and an n factorial in the denominator. I need to verify that sc.eval_hermite(n, np.sqrt(1/2) * x does actually give me something large to scale things adequately for large n.
-% I need to think about things for a bit.
-
-An important part of my integral calculations was the need to choose the integration region for each matrix element. I needed the largest possible region without compromising the time spent for each element integration and so the integration bounds must depend on the state with the highest energy value used for each of the one hundred elements calculated. In addition, I needed to make sure the states went to zero for large x-values in order to take advantage of the basis states. Therefore I set the limits of integration to be much larger than the turning points of the harmonic oscillator so I was able to guarantee that the states have exponentially decayed to zero at the bounds of my integration. I settled the boundaries by trial and error and determined that the values $b  = \pm 10\sqrt{4 \mathrm{max}(m,n) + 2}$ were adequate.\\\\
+An important part of my integral calculations was the need to choose the integration region for each matrix element. I needed the largest possible region without compromising the time spent for each element integration and so the integration bounds must depend on the state with the highest energy value used for each of the one hundred elements calculated. In addition, I needed to make sure the states went to zero for large x-values in order to take advantage of the basis states. Therefore I set the limits of integration to be much larger than the turning points of the harmonic oscillator so I was able to guarantee that the states have exponentially decayed to zero at the bounds of my integration. I settled the boundaries by trial and error and determined that the values $b  = \pm \sqrt{4 \mathrm{min}(m,n) + 2} + 2$ were more than adequate.\\\\
 To iteratively calculate the matrix elements as they are written in equation (\ref{eq:28}) I once again, used the \textit{complex\_quad()} function I wrote myself since the integrand of each matrix element integral was complex-valued. My modified function calculates the integral for the real part and the integral for imaginary part of the integrand separately and it returns the total integral as a linear combination of the real plus $i$ times the imaginary part.\\
 \\Finally, my code repeated this procedure and calculated one hundred $100\times100$ matrices. One matrix for each $\epsilon$ in my discretised region for $\epsilon$ values between 0 and -1.
 
+Constructing the integrand for each matrix element as per equation (\ref{eq:28}), ie. \mbox{$\psi_m(x)^* \left (  - \frac{d^2}{dx^2} + x^2(ix)^{\epsilon}\right ) \psi_n(x)$} was computationally expensive, because it required the calculation of the harmonic oscillator basis states $\psi_m$ and $\psi_n$, and that of the Hamiltonian. To numerically calculate the second order derivative in the Hamiltonian I used a finite centred differences approximation
+\begin{equation}\label{eq:29}
+\frac{d^2 \psi_n(x)}{dx^2} = \frac{\psi_n(x + h) - 2 \psi_n(x) + \psi_n(x - h)}{h^2}
+\end{equation}
+I calculated $\psi_m(x)$ once for every integrand, but I calculated 3 different $\psi_n(x)$ for my centred finite differences, and this approach crashed my calculation.\\
 
+\subsubsection{Hermite functions}
+The main computational issue was due to the size of the Harmonic oscillator states $\psi_n(x)$. The factors the comprise the states are: $\frac{1}{\sqrt{2^n n!}}$ which underflows as n grows large, and the Hermite polynomial $H_n(x)$ which overflows as n grows large. This behaviour makes numerically generating high n harmonic oscillator states impossible (high n can be as low as n = 130).
+I solved this problem using a modified version of a numerical method available in \textit{www.numbercrunch.de} written by H. Bauke. The aim of the method is to calculate the functions in equation (\ref{eq:27}) using the recurrence relation 
+\begin{equation} \label{eq:30}
+H_n(x) = 2xH_{n-1}(x) - 2(n-1)H_{n-2}(x)
+\end{equation}
+where $H_0(x) = 1 $ and $H_1(x) = 2x$. The recursion relation partly eliminates the blow up of equation (\ref{eq:27}) by taking care of the issue due to large values of n. Therefore the method defines the recurrence relation corresponding to equation (\ref{eq:27}) as 
+\begin{equation} \label{eq:31}
+\psi_n(x) = \sqrt{\frac{2}{n}}x\psi_{n-1}(x) - \sqrt{\frac{n-1}{n}}(n-1)\psi_{n-2}(x)
+\end{equation}
+\\Lastly, to fully solve all problems of underflow and overflow it is necessary to consider what happens when we are dealing with Hermite functions at large x values.
+For $x>38$ the factor $\mathrm{e}^{-x^2/2}$ is smaller than any number that can be represented as a double precision floating point number. A very robust remedy to numerical underflow was sketched in BIT Numerical Mathematics, Vol. 49, pp 281-295. The basic idea is to keep the magnitude of the modified Hermite polynomials on the order of one during their calculation via the recurrence relation (\ref{eq:31}) by introducing a suitable normalizing factor. During the calculation one has to keep track of the sum of the logarithms of these normalizing factors. Then the factor $\mathrm{e}^{-x^2/2}$ has to be modified by this sum when the value of the Hermite function is calculated. This algorithm allows to calculate the values of high-order Hermite functions even for quite large arguments\cite{Bauke}.\\
 
+Once I Implemented the changes to my code suggested by Bauke's work, my matrix elements were actually computed but the speed of each integral I calculated was incredibly slow. My numerics required some Cython to allow the code to compile the function using C in order to bypass the limitations that come from using exclusively Python. My partner Chris helped me with this step and he translated my code into Cython for me. The algorithm is still the same complexity as before $(O(N^3))$ but the calculations were compiled approximately$380\times$ faster than when I used Python code. Still, for discretising my range of $\epsilon$ I decided to use 100 values and so I had to calculate 100 Hamiltonian matrices so the code ran overnight.
 
 \subsection{Results}
 
 \subsubsection{The region of unbroken \PT-symmetry}
 Using the WKB integral quantisation condition I calculated how much phase is gained by traversing a contour in the complex plane from one of the roots of the equation $E = x^2(ix)^\epsilon$ to another. Here I compare my numerical results for the energies pertaining to the unbroken \PT-symmetry region $(\epsilon \geq 0)$ in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders} with the energies reported in Bender's paper ``Making sense of non-Hermitian Hamiltonians'' by plotting my obtained energy values together with Bender's calculated numerical energies, Bender's values are reported to have been obtained by the WKB integral and by Runge-Kutta.
-
 \begin{Figure}
 \centering
 \includegraphics[width=\linewidth]{comparing_to_bender(4).pdf}
@@ -392,13 +399,11 @@ Using the WKB integral quantisation condition I calculated how much phase is gai
 \end{Figure}
 
 \subsubsection{The region of broken \PT-symmetry}
-
 \begin{Figure}
  \centering
  \includegraphics[width=0.75\linewidth]{broken_region.pdf}
- \captionof{figure}{This plot is an extension of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. Here I display the eigenvalues of the parametric family of \PT-symmetric,  non-hermitian Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for $\epsilon \leq 0 $. This figure depicts fully real eigenvalues (black dots) and the points at which the eigenvalues become degenerate and then form complex-conjugate pairs. The real parts of these pairs of eigenvalues (blue dots) initially decrease as $\epsilon$ decreases but blow up suddenly as $\epsilon$ approaches -1. The imaginary parts of the eigenvalue pairs (red dots) remain finite and appear to decay to zero at  $\epsilon = -1$.}
+ \captionof{figure}{This plot is an extension of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. Here I display the discretised space of $\epsilon$ as 100 values in the horizontal axis, and the eigenvalues of the parametric family of \PT-symmetric,  non-hermitian Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for the region corresponding to $\epsilon \leq 0$ in the vertical axis. This figure depicts fully real eigenvalues (black dots) and the points at which the eigenvalues become degenerate and then form complex-conjugate pairs. The real parts of these pairs of eigenvalues (blue dots) initially decrease as $\epsilon$ decreases but blow up suddenly as $\epsilon$ approaches -1. The imaginary parts of the eigenvalue pairs (red dots) remain finite and appear to decay to zero at  $\epsilon = -1$.}
 \end{Figure}
-
 
 \subsubsection{The final result}
 \begin{Figure}

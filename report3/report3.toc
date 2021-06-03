@@ -12,14 +12,15 @@
 \contentsline {subsubsection}{\numberline {3.1.1}WKB approximation}{11}%
 \contentsline {subsubsection}{\numberline {3.1.2}Matrix equations}{12}%
 \contentsline {subsubsection}{\numberline {3.1.3}Matrix elements}{12}%
+\contentsline {subsubsection}{\numberline {3.1.4}Hermite functions}{13}%
 \contentsline {subsection}{\numberline {3.2}Results}{13}%
 \contentsline {subsubsection}{\numberline {3.2.1}The region of unbroken \textit {PT}-symmetry}{13}%
-\contentsline {subsubsection}{\numberline {3.2.2}The region of broken \textit {PT}-symmetry}{14}%
-\contentsline {subsubsection}{\numberline {3.2.3}The final result}{15}%
-\contentsline {section}{\numberline {4}Discussion}{15}%
-\contentsline {subsection}{\numberline {4.1}Stokes wedges and boundary conditions}{16}%
-\contentsline {subsection}{\numberline {4.2}\textit {PT}-symmetry breaking}{16}%
-\contentsline {subsection}{\numberline {4.3}Exceptional points}{16}%
-\contentsline {section}{\numberline {5}Conclusion}{16}%
-\contentsline {section}{\numberline {6}Acknowledgements}{16}%
-\contentsline {section}{\numberline {7}Appendix}{16}%
+\contentsline {subsubsection}{\numberline {3.2.2}The region of broken \textit {PT}-symmetry}{15}%
+\contentsline {subsubsection}{\numberline {3.2.3}The final result}{16}%
+\contentsline {section}{\numberline {4}Discussion}{16}%
+\contentsline {subsection}{\numberline {4.1}Stokes wedges and boundary conditions}{17}%
+\contentsline {subsection}{\numberline {4.2}\textit {PT}-symmetry breaking}{17}%
+\contentsline {subsection}{\numberline {4.3}Exceptional points}{17}%
+\contentsline {section}{\numberline {5}Conclusion}{17}%
+\contentsline {section}{\numberline {6}Acknowledgements}{17}%
+\contentsline {section}{\numberline {7}Appendix}{17}%
