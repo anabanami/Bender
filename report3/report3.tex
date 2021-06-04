@@ -4,25 +4,43 @@
 %----------------------------------------------------------------------------------------
 
 % latexmk -pvc -pdf
-\documentclass[10pt, a4paper, singlespacing, headsepline]{article}
-\usepackage[utf8]{inputenc} % Required for inputting international characters
-\usepackage[T1]{fontenc} % Output font encoding for international characters
-\usepackage{dsfont}
+\documentclass[10pt, a4paper, singlespacing, headsepline]{report}
 \usepackage[margin=0.98in]{geometry}
-\usepackage{graphicx}
-\usepackage[font=scriptsize,labelfont=bf]{caption}
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
 \usepackage{mathtools}
-\usepackage{blindtext}
+\usepackage{dsfont}
+\usepackage[font=scriptsize,labelfont=bf]{caption}
 \usepackage[english]{babel}
+\usepackage{graphicx}
 \newenvironment{Figure}
     {\par\medskip\noindent\minipage{\linewidth}}
     {\endminipage\par\medskip}
+\usepackage{blindtext}
+
+% Colours:
+\usepackage[table]{xcolor}
+\definecolor{purple}{RGB}{117,77,226}
+
+% Hyperlinked references, contents:
+\usepackage[bookmarksopen,
+  pagebackref,
+  % pdfpagelayout=TwoPageRight,
+  colorlinks=true,
+  urlcolor=purple,
+  citecolor=purple,
+  filecolor=purple,
+  linkcolor=purple,
+  % urlcolor=black,
+  % citecolor=black,
+  % filecolor=black,
+  % linkcolor=black,
+  linktocpage=true]
+  {hyperref}
 
 \newcommand\II{\mathbb{I}}
-\newcommand\PT{\textit{PT}}
-\newcommand\PP{\textit{P}}
-\newcommand\TT{\textit{T}}
+\newcommand\PT{\emph{PT}}
+\newcommand\PP{\emph{P}}
+\newcommand\TT{\emph{T}}
 
 %----------------------------------------------------------------------------------------
 %   TITLE PAGE
@@ -86,15 +104,15 @@ It is the one that is the most adaptable to change.''}\bigbreak
 %  CONTENTS
 %----------------------------------------------------------------------------------------
 
-\begin{abstract}
+\begin{abstract}\label{Abstract}
 \blindtext
 \end{abstract}
 
-\section{Introduction}
+\chapter{Introduction}\label{Introduction}
 When my supervisors offered me the possibility of doing my research project on a different kind of quantum theory, I accepted the proposition promptly. 
 From early on, my main motivation was to disenfranchise myself from any assumptions about what it meant to do quantum mechanics. I thought that this project could help me in the process of reformulating what I thought I already understood. This did happen, and the more I read about this topic the more I noticed that my picture of quantum theory was not wrong, but it was incomplete. From this realisation my curiosity only grew, as the new information I discovered resembled a set of shinier new tools for my toolbox. I hope that reading this work has the same effect for you.
 
-\subsection{Good ol' quantum mechanics}
+\section{Good ol' quantum mechanics}\label{QM}
 In the standard formalism of quantum mechanics operators must satisfy a set of properties which deem them suitable as real observable quantities in nature.
 An operator is defined as observable if its eigenvalues are real valued. This means that an observer may use the operator to measure certain qualities of a system and come to a real answer. In addition, it is  necessary that the eigenvalues of the operator are bounded below. Hence, the observer will be able to measure a minimum value out of all the possible real answers. 
 The original postulates of quantum mechanics encapsulate these two physical criteria in a mathematical property of operators known as Hermicity (Hermitian operators are also known as self-adjoint operators in mathematics).\\
@@ -103,19 +121,19 @@ An operator $\hat{O}$ is Hermitian if it satisfies for any $|f \rangle$ and $|g\
 \langle f|\widehat{O}|g\rangle = \langle g|\widehat{O}|f \rangle^{*},
 \end{equation}  
 Where the asterisk operation represents complex conjugation.\\
-The equations governing the time evolution of a physical system can be derived from the Hamiltonian of said system\cite{BenderPT}. Nominally, Hermitian Hamiltonians are used to describe systems that are not in contact with their environment. These idealised systems are conventionally called \textit{closed} or \textit{isolated}, these adjectives refer to the defined boundary conditions of the system and how these conditions affect the system dynamics. \textit{Isolated} systems undergo unitary time evolution, Ie. As time passes, the eigenstates' norms are preserved and so the total probability of an eigenstate of the system is conserved. 
+The equations governing the time evolution of a physical system can be derived from the Hamiltonian of said system\cite{BenderPT}. Nominally, Hermitian Hamiltonians are used to describe systems that are not in contact with their environment. These idealised systems are conventionally called \emph{closed} or \emph{isolated}, these adjectives refer to the defined boundary conditions of the system and how these conditions affect the system dynamics. \emph{Isolated} systems undergo unitary time evolution, Ie. As time passes, the eigenstates' norms are preserved and so the total probability of an eigenstate of the system is conserved. 
 \\The reality and boundedness of a Hermitian Hamiltonian's energy spectrum and the unitary time evolution of its eigenstates demonstrate the robustness of Hermicity as a mathematical condition to impose as a postulate in quantum theory.
 But with this robustness arise limitations. Because it is not possible to use quantum theory on a system that is in contact with the outside environment.
 
-\subsection{Adopting a new assumption}
+\section{Adopting a new assumption}\label{Assumptions}
 The desire to study non-idealised systems using quantum mechanics requires that we reconsider the Hermicity postulate and replace it with one that is less restrictive.
 In addition to expanding our analytical tool-box, non-Hermitian quantum mechanics prioritises physical principles rather than mathematical ones by establishing parity-time reflection symmetry (\PT-symmetry) as a more generalisable alternative to Hermicity.
  
-\subsection{\PT-symmetric quantum mechanics}
+\section{\PT-symmetric quantum mechanics}\label{PT}
 The \PP-operator represents parity (space-reflection), that is, any gain or loss components in a system get interchanged for the opposite component. The \TT-operator represents time-reversal, it has the effect of turning a system with gain into a system with loss (and vice versa)\cite{BenderPT}. In Figure~\ref{fig:AB} on page~\pageref{fig:AB}, I present a toy example of a \PT-symmetric system.
 \begin{Figure}
 \centering
-\includegraphics[width=0.4\linewidth]{cartoon1.pdf}
+\includegraphics[width=0.3\linewidth]{cartoon1.pdf}
 \captionof{figure}{If there are two subsystems, call them A and B, and both subsystems are in contact with the outside environment, where the set-up is that the subsystem A gains energy while subsystem B loses the same amount of energy. Then we can consider the A and B subsystems as time-reversed versions of each other. Taken together as a larger combined system, then the AB system has no net probability flux. Notice that when we exchange A for B there is no change to the composite system, This means that the combined AB system is \PT-symmetric.}
 \label{fig:AB}
 \end{Figure}
@@ -211,7 +229,7 @@ E_{\pm} = a \pm \sqrt{g^2 - b^2},
 \end{equation}
 from this we can derive 3 scenarios, the first is the case when $g^2 < b^2$. In this case we have complex-valued eigenvalues, and so the weak coupling scenario yields a system that is not in dynamic equilibrium, because the coupled states continue to decay or grow. Alternatively, if $g^2 > b^2$ then this corresponds to strongly coupled states that do not decay nor grow, and so we have a real valued energy spectrum. These two coupling scenarios correspond to the cases of broken and unbroken \PT-symmetry respectively. Finally the last case is when $g = \pm b$. This is the degenerate case. In non-Hermitian system degeneracy is expressed by real eigenvalues merging into complex conjugate pairs as $|g| \rightarrow b$. In my discussion I will explain on how the merging of eigenvalues has important experimental consequences.
 
-\subsection{Nerd-Sniped}
+\section{Nerd-Sniped}\label{Nerd}
 \begin{Figure}
 \centering
 \includegraphics[width=0.6\linewidth]{nerd_sniping.pdf}
@@ -228,12 +246,12 @@ I must be honest, I had a couple of ideas for my project but I only achieved one
 
 My investigations of non-Hermitian Hamiltonians were pivoted by trying to understand what was going on in the figure above. My approach to understanding was based on trying to replicate the figure itself as it portrays a very clear visualisation of \PT-symmetry breaking (occurring at $\epsilon = 0$) and its effect on the energy spectrum of non-Hermitian \PT-symmetric Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. It can be seen in this figure that the reality and boundedness from below of the eigenvalues is maintained as the perturbation parameter $\epsilon$ is varied.\\
 
-For my investigation of this figure, I had to solve the time independent eigenvalue problems associated with a $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. For this I used two different mathematical techniques, since the reality of the spectrum for \PT-symmetric Hamiltonian systems is characterized by the commutation relation of the Hamiltonian in question and the \PT-operator. Because the \PT-operator is non-linear, the eigenstates of the Hamiltonian may or may not be eigenstates of the \PT-operator. We can establish the meaning of broken and unbroken \PT-symmetry as a conditional statement: \textit{If the Hamiltonian and the \PT-operator share all eigenstates, then the symmetry is unbroken, but if not all the eigenstates are simultaneously shared between the Hamiltonian and the \PT-operator then the symmetry is broken}\cite{BenderPT}\cite{Bender}. In other words, only if the \PT-symmetric Hamiltonian shares eigenstates with the \PT-operator, then the corresponding eigenvalues to those shared eigenstates are real-valued.
+For my investigation of this figure, I had to solve the time independent eigenvalue problems associated with a $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. For this I used two different mathematical techniques, since the reality of the spectrum for \PT-symmetric Hamiltonian systems is characterized by the commutation relation of the Hamiltonian in question and the \PT-operator. Because the \PT-operator is non-linear, the eigenstates of the Hamiltonian may or may not be eigenstates of the \PT-operator. We can establish the meaning of broken and unbroken \PT-symmetry as a conditional statement: \emph{If the Hamiltonian and the \PT-operator share all eigenstates, then the symmetry is unbroken, but if not all the eigenstates are simultaneously shared between the Hamiltonian and the \PT-operator then the symmetry is broken}\cite{BenderPT}\cite{Bender}. In other words, only if the \PT-symmetric Hamiltonian shares eigenstates with the \PT-operator, then the corresponding eigenvalues to those shared eigenstates are real-valued.
 
 Replicating this figure took most of my time during the semester, and so I was unable to develop my other investigations further. Nevertheless, for the sake of completeness, I will describe in section 2 what my other project idea was.
 
-\section{My aborted simulation}
-\subsection{Methods}
+\chapter{My aborted simulation}\label{Aborted}
+\section{Methods}
 According to ``Non-Hermitian quantum mechanics'' by Nimrod Moiseyev. A book that I was given by my supervisors early on in the semester. The numerical propagation of wave packets is much more simple when taken within the framework of the non-Hermitian formalism of quantum mechanics rather than in the standard (Hermitian) formalism\cite{Moiseyev}. The main idea behind this method is to include a reflection-free complex absorbing potential (RF-CAP) in the Hamiltonian describing the wave packet's time evolution. This added potential term allows the description of outward flowing states without any un-physical reflection effects from the boundary of the simulation region.\\
 I was very eager to verify this technique on a simulation of a wave packet propagating in space using Python. First, I constructed wave function to be propagated. Since I required analytically verifiable derivatives, I figured that the easiest wave function choice was a Gaussian wave packet with initial condition 
 \begin{equation} \label{eq:13}
@@ -247,9 +265,9 @@ To numerically calculate the second order spatial derivative I used the Fourier 
 \begin{equation} \label{eq:15}
 f(x, t, \psi) =  \frac{-i}{\hbar} \left [ \frac{-\hbar^2}{2m} \mathcal{F}^{-1}\{-k^2\mathcal{F}\{\psi(x, t)\}\} + V(x, t)\psi(x, t)\right ],
 \end{equation}
-I was originally unsure of what the potential $V(x,t)$ should look like since the whole point of this exercise is the inclusion of a reflection-free complex absorbing potential (RF-CAP) in the Hamiltonian. The RF-CAP should attain non-zero values only in the boundary region in the coordinate space where the physical potential $V(x,t)$ vanishes\cite{Moiseyev}. Eventually, I opted for implementing a square well potential as $V(x,t)$ in the Schrödinger equation to give rise to the non-physical interference that should be expected at the boundary of the coordinate space given the non continuous boundary conditions the problem requires.
-I defined the square well potential V(x, t) as an array over an x array ranging from $0$ to $10$. The square potential was defined as zero everywhere except at the boundaries. The boundaries' height was determined by trial and error based on the kinetic energy of the wave packet. I settled the barrier to be a thousand times larger than the initial value for the wave vector squared, \mbox{ie. $V(0, t) = V(10, t) = 1000k_0^2$}.\\\\
-Implementing the time evolution required by the simulation I used the fourth-order Runge-Kutta method on equation (\ref{eq:15}) $f(x, t, \psi)$. The algorithm is defined as
+I was originally unsure of what the potential $V(x,t)$ should look like since the whole point of this exercise is the inclusion of a reflection-free complex absorbing potential (RF-CAP) in the Hamiltonian. The RF-CAP should attain non-zero values only in the boundary region in the coordinate space where the physical potential $V(x,t)$ vanishes\cite{Moiseyev}. Eventually, I opted for implementing a square well potential as $V(x,t)$ to give rise to the required non-physical interference that should be expected at the spatial boundaries of this problem.
+I defined the square well potential V(x, t) as an array over an x-array ranging from $0$ to $10$. The square potential was defined as zero everywhere except at the boundaries. The boundaries' height was determined by trial and error based on the kinetic energy of the wave packet. I settled with having the barrier to be a thousand times larger than the initial value for the wave vector squared, \mbox{ie. $V(0, t) = V(10, t) = 1000k_0^2$}.\\\\
+To implement the time evolution required by the simulation I used the fourth-order Runge-Kutta method on equation (\ref{eq:15}) $f(x, t, \psi)$. The algorithm is defined as
 \begin{equation} \label{eq:16}
 \begin{split}
 &k_1 = f(x, t, \psi),\\
@@ -261,10 +279,9 @@ Implementing the time evolution required by the simulation I used the fourth-ord
 \end{equation}
 where $\Delta t = 0.0001$ is the evolution time step, I chose this value to be small enough to be able to resolve motion of the Nyquist mode within the spatial step 
 $\Delta x = \frac{x_{\mathrm{max}} - x_{\mathrm{min}}}{1024} = \frac{10}{1024}$.
-This numerical formula in equation (\ref{eq:16}) propagates a solution over a time interval by combining the information obtained by solve a differential equation using four Euler-style steps (each involving one evaluation of the differential equation with slightly different parameters), and then using the information obtained to match a Taylor series expansion up to fourth order, by combining the evaluations if the differential equation in this way we eliminate the error terms order by order, with the error remaining being very small\cite{N_R}.
+The numerical formula in equation (\ref{eq:16}) propagates a solution over a time interval, by solving a differential equation using four Euler-style steps (each involving one evaluation of the differential equation with slightly different parameters), and then combining the information obtained for each solution to match a Taylor series expansion up to fourth order. By combining the evaluations of the differential equation in this way we eliminate the error terms order by order, leaving the error remaining being very small\cite{N_R}.
 
-\subsection{Results}
-
+\section{Results}
 \begin{Figure}
 \centering
 \includegraphics[width=\linewidth]{propagating_wave_with_reflection.pdf}
@@ -272,14 +289,13 @@ This numerical formula in equation (\ref{eq:16}) propagates a solution over a ti
 \end{Figure}
 Understanding the implementation of the potential characteristic to this non-Hermitian technique simulation required a lot of reading and I ambitiously decided to leave this project unfinished in the meantime and continue with it after I successfully replicated Figure 1. in Bender. A project which I naively expected to finish quickly.
 
-\section{Reproducing Bender's figure}
-
-The defining principle behind Figure~\ref{fig:Benders} on page~\pageref{fig:Benders} is that we can think of the family of non-Hermitian \PT-symmetric Hamiltonians in equation (\ref{eq:17}) as complex deformations of the 1D harmonic oscillator (which is Hermitian and \PT-symmetric).
+\chapter{Reproducing Bender's figure}\label{Benders}
+The defining principle behind Figure~\ref{fig:Benders} on page~\pageref{fig:Benders} is that we can think of the family of non-Hermitian \PT-symmetric Hamiltonians defined below as complex deformations of the 1D harmonic oscillator (which is Hermitian and \PT-symmetric).
 \begin{equation}\label{eq:17}
 \hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon},
 \end{equation}
 where $\epsilon$ is a real parameter. The introduction of the real parameter $\epsilon$ acts in such a way that as $\epsilon$ increases from $0$, the Hamiltonian is no longer Hermitian but its \PT-symmetry is preserved. This occurs because the quantity $(i\hat{x})$ is \PT-invariant\cite{BenderPT}\cite{Bender}.\\ 
-To formulate the eigenvalue problems for both methods used to find all the eigenvalues of equation (\ref{eq:17}), I split the problem into the expected parametric regions (as per Bender's descriptions) corresponding to \textit{unbroken} \PT-symmetry ($\epsilon \geq 0$) and \textit{broken} \PT-symmetry ($\epsilon < 0$).\\
+To formulate the eigenvalue problems for both methods used to find all the eigenvalues of equation (\ref{eq:17}), I split the problem into the expected parametric regions (as per Bender's descriptions) corresponding to \emph{unbroken} \PT-symmetry ($\epsilon \geq 0$) and \emph{broken} \PT-symmetry ($\epsilon < 0$).\\
 When $\epsilon \geq 0$ the spectra are real, positive and discrete. Energy levels increase with increasing $\epsilon$.
 To solve the Schrödinger eigenvalue problem I write the Schrödinger equation in coordinate space.\\ The relevant operators in this space are
 \begin{align} \label{eq:18}
@@ -289,24 +305,23 @@ where we want to treat the variable x as complex, which does not modify the comm
 \begin{equation}\label{eq:19}
 -\psi'' + x^2 (i x)^{\epsilon} \psi = E \psi.
 \end{equation}
-Equation (\ref{eq:19}) cannot be solved exactly using analytic methods for $\epsilon \neq 0$, therefore my approach is numerical. From reference \cite{Bender} I learned that the WKB phase integral approximation can be used to find very a accurate approximation to the real eigenvalues visible in the \textit{unbroken} \PT-symmetry region ($\epsilon \geq 0$) visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. 
+Equation (\ref{eq:19}) cannot be solved exactly using analytic methods for $\epsilon \neq 0$, therefore my approach is numerical. From reference \cite{Bender} I learned that the WKB phase integral approximation can be used to find very a accurate approximation to the real eigenvalues visible in the \emph{unbroken} \PT-symmetry region ($\epsilon \geq 0$) visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. 
 
-\subsection{Methods}
-
-\subsubsection{WKB approximation}
-To solve equation (\ref{eq:19}) I had to find out which were the boundary conditions for the problem. I learned from several sources that the boundary conditions depend on the deformation parameter $\epsilon$ \cite{BenderPT}\cite{Bender}\cite{Bender2017}. Since the eigenvalue problem can be conceptualised as a harmonic oscillator that has been deformed into the complex x-plane, finding the solutions requires that I integrate equation (\ref{eq:19}) along a contour in the complex x-plane and that the solution be equal to zero at both ends of this contour\cite{BenderPT}. According to Bender, the integration contour should be located within two angular sectors in the complex x-plane as $|x| \rightarrow \infty$. These sectors are called \textit{Stokes wedges}\cite{BenderPT}\cite{Bender}, in general these wedges are centred about the origin in the complex x-plane and are defined as 
+\section{Methods}
+\subsection{WKB approximation}\label{WKB}
+To solve equation (\ref{eq:19}) I had to find out which were the boundary conditions for the problem. I learned from several sources that the boundary conditions depend on the deformation parameter $\epsilon$ \cite{BenderPT}\cite{Bender}\cite{Bender2017}. Since the eigenvalue problem can be conceptualised as a harmonic oscillator that has been deformed into the complex x-plane we need to reframe the spatial variable $x$ as $x = r e^{i\theta}$ , finding the solutions requires that I integrate equation (\ref{eq:19}) along a contour in the complex x-plane and that the solution be equal to zero at both ends of this contour\cite{BenderPT}. According to Bender, the integration contour should be located within two angular sectors in the complex x-plane as $|x| \rightarrow \infty$. These sectors are called \emph{Stokes wedges}\cite{BenderPT}\cite{Bender}, in general these wedges are centred about the origin in the complex x-plane and we can define their orientation the complex x-plane in terms of
 \begin{align} \label{eq:20}
 &-\frac{1}{4} \pi  < \mathrm{arg}x < \frac{1}{4}\pi& &\mathrm{and}& &\frac{3}{4} \pi  < \mathrm{arg}x < \frac{5}{4}\pi& 
 \end{align}
 the eigenfunctions of the problem vanish exponentially at both ends of the integration contour.\
-Determining the locations of the \textit{Stokes wedges} is in general not necessary to solve the differential equation exactly\cite{BenderPT}. For the purpose of my eigenvalue problem, it is only required to understand the asymptotic behaviour of the solutions for large $|x|$ values.\\
+Determining the locations of the \emph{Stokes wedges} is in general not necessary to solve the differential equation exactly\cite{BenderPT}. For the purpose of my eigenvalue problem, it is only required to understand the asymptotic behaviour of the solutions for large $|x|$ values.\\
 I assumed that for an ODE of the form of equation (\ref{eq:19}), ie. \mbox{$\psi'' V(x)^{\epsilon} \psi = E \psi$}, the behaviour of $(E - V(x)) \rightarrow \infty$ as $|x| \rightarrow \infty$ in the complex x-plane. The next assumption I made was that the solution should be of the form
 \begin{equation} \label{eq:21}
-\mbox{$\psi \approx \mathrm{exp}[\pm  \int^{x}dx \sqrt{E - V(x)}]$},
+\psi \approx \mathrm{exp}[\pm  \int^{x}dx \sqrt{E - V(x)}],
 \end{equation}
-this is called the \textit{geometrical-optics approximation}\cite{BenderPT}.\\ 
-The location of \textit{Stokes wedges} in the complex plane, and hence the defined boundary conditions for my problem are determined by imposing that \mbox{$\psi(x) \rightarrow 0$ as $|x| \rightarrow \infty$} similarly to the case where $\epsilon = 0$ ie. The classical harmonic oscillator case,where the solutions are known to be square integrable for real x-values.\\
-Since I am assuming that my solutions will be wave functions moving in space, I am interested in learning how much phase is gained by traversing the integration contour in the complex x-plane. The end points of the integration contour are the turning points (the roots of the equation $E = x^2(ix)^{\epsilon}$) that \textit{analytically continue} off the real axis as $\epsilon$ increases from $0$\cite{BenderPT}\cite{Bender}. Independently of the number of possible roots of $E = x^2(ix)^{\epsilon}$, for the purpose of my technique I only need the following turning points to be the limits of integration
+this is called the \emph{geometrical-optics approximation}\cite{BenderPT}.\\ 
+The location of \emph{Stokes wedges} in the complex plane, and hence the defined boundary conditions for my problem are determined by imposing that \mbox{$\psi(x) \rightarrow 0$ as $|x| \rightarrow \infty$} similarly to the case where $\epsilon = 0$ ie. The classical harmonic oscillator case,where the solutions are known to be square integrable for real x-values.\\
+Since I am assuming that my solutions will be wave functions moving in space, I am interested in learning how much phase is gained by traversing the integration contour in the complex x-plane. The end points of the integration contour are the turning points (the roots of the equation $E = x^2(ix)^{\epsilon}$) that \emph{analytically continue off} of the real axis as $\epsilon$ increases from $0$\cite{BenderPT}\cite{Bender}. Independently of the number of possible roots of $E = x^2(ix)^{\epsilon}$, for the purpose of my technique I only need the following turning points to be the limits of integration
 \begin{align} \label{eq:22}
 x_{-}& = 
 E^{\frac{1}{\epsilon + 2}}
@@ -329,10 +344,10 @@ Since it does not make sense to compute a complex integral in Python, I proceede
 &dx\rightarrow dx'.
 \end{split}
 \end{equation}
-After my change of variables, I was able to calculate the WKB integral by writing my own integration function and using the \textit{quad()} module for integration in Python. I wrote a modified function that calculated integral for the real part and the integral for imaginary part of the integrand separately and set the function to return the total integral as a linear combination of the real plus $i$ times the imaginary part. I named my function: \textit{complex\_quad()}.\\
-I was able to verify the quantisation condition in equation (\ref{eq:23}) by taking the difference of the expression dependent of n in the left hand side of equation (\ref{eq:23}) and the resulting complex integral I calculated by using my \textit{complex\_quad()} function which corresponds to the right hand side of equation (\ref{eq:23}). I used this difference equation to optimize the resulting energy eigenvalue from my \textit{complex\_quad()} function. For the optimization I used my own modified version of the root finding algorithm module \textit{scipy.optimize.fsolve()}. My modifications simply allowed me to use the algorithm for both the real and imaginary part of my results, and to combine them similarly to what I did when calculating the real and imaginary parts of the complex integral as two separate integrals.
+After my change of variables, I was able to calculate the WKB integral by writing my own integration function and using the \emph{quad()} module for integration in Python. I wrote a modified function that calculated integral for the real part and the integral for imaginary part of the integrand separately and set the function to return the total integral as a linear combination of the real plus $i$ times the imaginary part. I named my function: \emph{complex\_quad()}.\\
+I was able to verify the quantisation condition in equation (\ref{eq:23}) by taking the difference of the expression dependent of n in the left hand side of equation (\ref{eq:23}) and the resulting complex integral I calculated by using my \emph{complex\_quad()} function which corresponds to the right hand side of equation (\ref{eq:23}). I used this difference equation to optimize the resulting energy eigenvalue from my \emph{complex\_quad()} function. For the optimization I used my own modified version of the root finding algorithm module \emph{scipy.optimize.fsolve()}. My modifications simply allowed me to use the algorithm for both the real and imaginary part of my results, and to combine them similarly to what I did when calculating the real and imaginary parts of the complex integral as two separate integrals.
 
-\subsubsection{Matrix equations}
+\subsection{Matrix equations}\label{Matrix}
 The process I followed to solve equation (\ref{eq:19}) for the broken \PT-symmetry region (the region corresponding to values of $\epsilon < 0$) was a lot more free form. Bender's paper ``Making sense of non-Hermitian Hamiltonians'' did not go into details about the behaviour of the spectrum this region nor gave any advice on how to solve the eigenvalue problem for the parametric Hamiltonians with $\epsilon < 0$ values. I chatted to my supervisors a lot when I was working on this and we settled on me attempting to re-write equation (\ref{eq:19}) as a matrix equation using the family of harmonic oscillators eigenstates written in the x-spatial coordinate the basis. These functions are also known as Hermite functions and are generally written as
 \begin{align} \label{eq:25}
 &\psi_n(x)= \frac{1}{\sqrt{2^n n!}} 
@@ -354,11 +369,11 @@ To numerically solve my matrix equation I first needed to calculate $N$ (I chose
 \left \langle m \left |\hat{H} \right|n \right \rangle = \int_{-b}^{b} \psi_m(x)^* \left (  - \frac{d^2}{dx^2} + x^2(ix)^{\epsilon}\right ) \psi_n(x) dx
 \end{equation}
 where m and n are the indices for the harmonic oscillator states. Both $m, n$ range from 0 to 100, and $\pm b$ are the integration limits which I will define in the next section. Using these elements I constructed one hundred Hamiltonian matrices. Each Hamiltonian matrix corresponds to a different $\epsilon$ value in a range of one hundred values between 0 to -1. 
-After the matrices were constructed I simply used the \textit{scipy.linalg.eig()} module in Python to solve each eigenvalue problem for my set of $100\times100$ Hamiltonian matrices. With this module I found the eigenvalues and the right eigenvectors for each matrix.
+After the matrices were constructed I simply used the \emph{scipy.linalg.eig()} module in Python to solve each eigenvalue problem for my set of $100\times100$ Hamiltonian matrices. With this module I found the eigenvalues and the right eigenvectors for each matrix.
 
-\subsubsection{Matrix elements}
+\subsubsection{Matrix elements}\label{Elements}
 An important part of my integral calculations was the need to choose the integration region for each matrix element. I needed the largest possible region without compromising the time spent for each element integration and so the integration bounds must depend on the state with the highest energy value used for each of the one hundred elements calculated. In addition, I needed to make sure the states went to zero for large x-values in order to take advantage of the basis states. Therefore I set the limits of integration to be much larger than the turning points of the harmonic oscillator so I was able to guarantee that the states have exponentially decayed to zero at the bounds of my integration. I settled the boundaries by trial and error and determined that the values $b  = \pm \sqrt{4 \mathrm{min}(m,n) + 2} + 2$ were more than adequate.\\\\
-To iteratively calculate the matrix elements as they are written in equation (\ref{eq:28}) I once again, used the \textit{complex\_quad()} function I wrote myself since the integrand of each matrix element integral was complex-valued. My modified function calculates the integral for the real part and the integral for imaginary part of the integrand separately and it returns the total integral as a linear combination of the real plus $i$ times the imaginary part.\\
+To iteratively calculate the matrix elements as they are written in equation (\ref{eq:28}) I once again, used the \emph{complex\_quad()} function I wrote myself since the integrand of each matrix element integral was complex-valued. My modified function calculates the integral for the real part and the integral for imaginary part of the integrand separately and it returns the total integral as a linear combination of the real plus $i$ times the imaginary part.\\
 \\Finally, my code repeated this procedure and calculated one hundred $100\times100$ matrices. One matrix for each $\epsilon$ in my discretised region for $\epsilon$ values between 0 and -1.
 
 Constructing the integrand for each matrix element as per equation (\ref{eq:28}), ie. \mbox{$\psi_m(x)^* \left (  - \frac{d^2}{dx^2} + x^2(ix)^{\epsilon}\right ) \psi_n(x)$} was computationally expensive, because it required the calculation of the harmonic oscillator basis states $\psi_m$ and $\psi_n$, and that of the Hamiltonian. To numerically calculate the second order derivative in the Hamiltonian I used a finite centred differences approximation
@@ -367,9 +382,9 @@ Constructing the integrand for each matrix element as per equation (\ref{eq:28})
 \end{equation}
 I calculated $\psi_m(x)$ once for every integrand, but I calculated 3 different $\psi_n(x)$ for my centred finite differences, and this approach crashed my calculation.\\
 
-\subsubsection{Hermite functions}
+\subsubsection{Hermite functions}\label{Hermite}
 The main computational issue was due to the size of the Harmonic oscillator states $\psi_n(x)$. The factors the comprise the states are: $\frac{1}{\sqrt{2^n n!}}$ which underflows as n grows large, and the Hermite polynomial $H_n(x)$ which overflows as n grows large. This behaviour makes numerically generating high n harmonic oscillator states impossible (high n can be as low as n = 130).
-I solved this problem using a modified version of a numerical method available in \textit{www.numbercrunch.de} written by H. Bauke. The aim of the method is to calculate the functions in equation (\ref{eq:27}) using the recurrence relation 
+I solved this problem using a modified version of a numerical method available in \emph{www.numbercrunch.de} written by H. Bauke. The aim of the method is to calculate the functions in equation (\ref{eq:27}) using the recurrence relation 
 \begin{equation} \label{eq:30}
 H_n(x) = 2xH_{n-1}(x) - 2(n-1)H_{n-2}(x)
 \end{equation}
@@ -380,11 +395,11 @@ where $H_0(x) = 1 $ and $H_1(x) = 2x$. The recursion relation partly eliminates 
 \\Lastly, to fully solve all problems of underflow and overflow it is necessary to consider what happens when we are dealing with Hermite functions at large x values.
 For $x>38$ the factor $\mathrm{e}^{-x^2/2}$ is smaller than any number that can be represented as a double precision floating point number. A very robust remedy to numerical underflow was sketched in BIT Numerical Mathematics, Vol. 49, pp 281-295. The basic idea is to keep the magnitude of the modified Hermite polynomials on the order of one during their calculation via the recurrence relation (\ref{eq:31}) by introducing a suitable normalizing factor. During the calculation one has to keep track of the sum of the logarithms of these normalizing factors. Then the factor $\mathrm{e}^{-x^2/2}$ has to be modified by this sum when the value of the Hermite function is calculated. This algorithm allows to calculate the values of high-order Hermite functions even for quite large arguments\cite{Bauke}.\\
 
-Once I Implemented the changes to my code suggested by Bauke's work, my matrix elements were actually computed but the speed of each integral I calculated was incredibly slow. My numerics required some Cython to allow the code to compile the function using C in order to bypass the limitations that come from using exclusively Python. My partner Chris helped me with this step and he translated my code into Cython for me. The algorithm is still the same complexity as before $(O(N^3))$ but the calculations were compiled approximately$380\times$ faster than when I used Python code. Still, for discretising my range of $\epsilon$ I decided to use 100 values and so I had to calculate 100 Hamiltonian matrices so the code ran overnight.
+Once I Implemented the changes to my code suggested by Bauke's work, my matrix elements were actually computed but the speed of each integral I calculated was incredibly slow. My numerics required some Cython to allow the code to compile the function using C in order to bypass the limitations that come from using exclusively Python. My partner Chris helped me with this step and he translated my code into Cython for me. The algorithm is still the same complexity as before $(O(N^3))$ but the calculations were compiled approximately $380\times$ faster than when I used Python code. Still, for discretising my range of $\epsilon$ I decided to use 100 values and so I had to calculate 100 Hamiltonian matrices so the code ran overnight.
 
-\subsection{Results}
+\section{Results}
 
-\subsubsection{The region of unbroken \PT-symmetry}
+\subsection{The region of unbroken \PT-symmetry}\label{PT unbroken}
 Using the WKB integral quantisation condition I calculated how much phase is gained by traversing a contour in the complex plane from one of the roots of the equation $E = x^2(ix)^\epsilon$ to another. Here I compare my numerical results for the energies pertaining to the unbroken \PT-symmetry region $(\epsilon \geq 0)$ in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders} with the energies reported in Bender's paper ``Making sense of non-Hermitian Hamiltonians'' by plotting my obtained energy values together with Bender's calculated numerical energies, Bender's values are reported to have been obtained by the WKB integral and by Runge-Kutta.
 \begin{Figure}
 \centering
@@ -398,29 +413,44 @@ Using the WKB integral quantisation condition I calculated how much phase is gai
 \captionof{figure}{My implementation of the WKB method on the family of non-Hermitian, \PT-symmetric Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for $\epsilon \geq 0$. My energy values (energy is the vertical axis) were in agreement with those visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. All the energies presented in this plot are real valued, and they are bounded below by the eigenvalues corresponding to the ground-state visible here as a blue plot.The changing colours of every plot represent increasing values of n corresponding to the left hand side expression in the WKB quantisation condition: \mbox{$\left (n + \frac{1}{2} \right )\pi$}. The horizontal axis is the range of values $0 \leq \epsilon \leq 3$.}
 \end{Figure}
 
-\subsubsection{The region of broken \PT-symmetry}
+\subsection{The region of broken \PT-symmetry}\label{PT broken}
 \begin{Figure}
  \centering
  \includegraphics[width=0.75\linewidth]{broken_region.pdf}
  \captionof{figure}{This plot is an extension of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. Here I display the discretised space of $\epsilon$ as 100 values in the horizontal axis, and the eigenvalues of the parametric family of \PT-symmetric,  non-hermitian Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for the region corresponding to $\epsilon \leq 0$ in the vertical axis. This figure depicts fully real eigenvalues (black dots) and the points at which the eigenvalues become degenerate and then form complex-conjugate pairs. The real parts of these pairs of eigenvalues (blue dots) initially decrease as $\epsilon$ decreases but blow up suddenly as $\epsilon$ approaches -1. The imaginary parts of the eigenvalue pairs (red dots) remain finite and appear to decay to zero at  $\epsilon = -1$.}
 \end{Figure}
 
-\subsubsection{The final result}
+\subsection{The final result}\label{Final}
 \begin{Figure}
  \centering
- \includegraphics[width=\linewidth]{my_figure_1.pdf}
+ \includegraphics[width=0.75\linewidth]{my_figure_1.pdf}
  \captionof{figure}{My rendition of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. This figure has all the same characteristics as Bender's original figure.
  All energies presented in this plot are real valued. The $\epsilon$ values are visible in the horizontal axis, while the vertical axis is the energy eigenvalues for each Hamiltonian in the parametric family $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. The vertical dotted green line corresponds to the value $\epsilon = 0$, which itself corresponds to the 1D classical harmonic oscillator Hamiltonian $\hat{H} = \hat{p}^2 + \hat{x}^2$. Above the value $\epsilon = 0$ all values in the spectra are fully real, positive and discrete. Energy levels increase with increasing $\epsilon$. In $-1 \leq \epsilon \leq 0$ region there is a finite number of real positive eigenvalues and an infinite number of complex-conjugate pairs of eigenvalues (the complex values are not depicted in this figure). The number of real eigenvalues decreases as $\epsilon$ decreases from 0 to -1 , for $\epsilon$ values that are more negative than the value $\epsilon = -0.57793$ the only remaining real eigenvalue corresponds to the ground-state energy. At the value $\epsilon = -1$ the spectrum is null, as all eigenvalues diverge towards positive infinity.}
 \end{Figure}
 
 
-\section{Discussion}
-\blindtext
+\chapter{Discussion}\label{Discussion}
+Since my main project objective became the calculation of the eigenvalues of a family of non-Hermitian, \PT-deformed Hamiltonians, and to replicate the energy spectra figure published by Bender in ``Making sense of non-Hermitian Hamiltonians''. I want to give a bit of an insight on the reasons why I opted for using certain numerical techniques over others.
 
-\subsection{Stokes wedges and boundary conditions}
+\section{Complex WKB}\label{Complex WKB}
+For the unbroken \PT-symmetry region of the spectrum, I decided to follow Bender's methodology in ``Making sense of non-Hermitian Hamiltonians''. In the paper he describes the WKB approximation technique as yielding a good approximation to the exact energy values of the eigenvalue problem. However, I found the efficacy of its implementation in the complex plane to be quite unintuitive.\\\\
+The complex WKB method involves treating x as a complex variable (ie. $x = re^{i\theta}$), and calculating how the asymptotic form of the solutions change as they are traced around the complex plane\cite{Sorrell}.\\
+Since the integral in the exponent in equation (\ref{eq:21}) is in general, complex valued, the solutions will contain either growing or decaying exponential terms. The nomenclature of the solutions depends on these growing or decaying exponential terms (since they describe a particular asymptotic behaviour). The solutions are called either \textbf{dominant} or \textbf{sub-dominant} respective to these growing or decaying exponential terms. \\If the integral in the exponent in equation (\ref{eq:21}) is purely real, then both WKB solutions will be purely oscillatory, with neither dominating the other\cite{Sorrell}.\\
+The bounds ($x_{\pm}$) of the integral in equation (\ref{eq:23}) are turning points of the equation $P(x) = E - V(x)$. Lines can be drawn in the complex plane, emanating from the turning points, marking the curves where $\mathrm{Im}(\int_{x_-}^{x^+} P(x)^{\frac{1}{2}}dx) = 0$. These lines are known as \emph{Stokes lines} and they mark the borders between sectors in the complex plane where solutions undergo \textbf{dominant} or \textbf{sub-dominant} behaviour, these sectors are known as \emph{Stokes wedges}. Knowing the position of \emph{Stokes lines} is crucial in applying the complex WKB method\cite{Sorrell}.
 
+\section{\emph{Stokes wedges} and boundary conditions} \label{Boundary conditions}
+One aspect of the complex WKB method that I found quite unintuitive was the determination of the boundary conditions for the differential equation. According to Bender, the WKB method works for the $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ eigenvalue problems because the sub-dominant eigenfunctions vanish exponentially in two \emph{Stokes wedges} in the complex x-plane. The eigenfunctions will vanish most rapidly at the centres of the wedges; at the edges of the wedges the eigenfunctions just oscillate and no longer vanish exponentially\cite{BenderPT}.\\\\
+As $\epsilon$ increases from 0, a logarithmic branch-point singularity appears at the origin, as $\epsilon$ continues increasing in the positive direction, it is necessary to introduce a branch-cut running from the origin along the positive imaginary axis. In this cut plane the solutions to equation (\ref{eq:19}) are analytic and singled-valued\cite{BenderPT}.\\
+In the case of the $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ eigenvalue problems I studied (for values of $-1 \leq \epsilon \leq 3$), the \emph{Stokes wedges} are always centred about the origin of the complex x-plane. As I described in section \ref{WKB}, the angular orientation of \emph{Stokes wedges} in the complex x-plane can be described by the argument of the complex variable $x = re^{i\theta}$.\\
+The asymptotic behaviour of the solutions to equation (\ref{eq:19}) for large $|x|$ values can be analytically determined from the \emph{geometrical-optics approximation} (\ref{eq:21})
 
-\subsection{\PT-symmetry breaking}
+\begin{Figure}
+ \centering
+ \includegraphics[width=0.75\linewidth]{Stokes_wedges.pdf}
+ \captionof{figure}{Four instances of \emph{Stokes wedges} changing as functions of $\epsilon$.For the cases when $\epsilon > 0$ the opening angles of the sectors decrease and the sectors rotate downward (both changes are respective to the $\epsilon = 0$ case). If $\epsilon = 0$), the angular opening is equal to $\pi/2$ and are centred about the positive-real and the negative-real axis.  For the the cases of $\epsilon < 0$ the angular behaviour is opposite to the positive $\epsilon$ values. The wedges get wider and rotate upwards (both changes are respective to the $\epsilon = 0$ case) the changes, get more dramatic for decreasing $\epsilon$ values. In the case of $\epsilon = -1$ the wedges fuse into one along the logarithmic branch cut on the positive-imaginary line. We can describe the topology of this scenario as the logarithmic Riemann surface collapsing onto a single sheet. When this occurs, The spectrum becomes null, meaning that there are no eigenvalues at all\cite{BenderPT}\cite{Bender2017}.}
+\end{Figure}
+
+\section{\PT-symmetry breaking}\label{PT breaking}
 
 % The known Gaussian-behaviour of the solutions of the undeformed harmonic oscillator, is preserved as the integration contour is deformed into the complex x-plane....
 % As $\epsilon$ becomes negative... read page 79 onward
@@ -444,7 +474,7 @@ Using the WKB integral quantisation condition I calculated how much phase is gai
 % psi_blank(x) ~ 2**(-1/2 * (n + 3/2)) * np.pi**-3/4 * n**(-1/2 - n) * np.exp(n - (x**2) / 4) * sc.eval_hermite(n, np.sqrt(1/2) * x)
 %HBAUKES STUFFFF
 
-\subsection{Exceptional points}
+\section{Exceptional points}\label{EPs}
 % % Square-root singularities are often called exceptional points. In general, eigenvalues cross (that is, they become degenerate) at exceptional points, the order of the degeneracy depends on the number of coalescent eigenvalues at that point. An exceptional point also marks the boundary between broken and unbroken \PT- symmetric phases\cite{BenderPT}.
 
 % %The conventional picture of quantum mechanics is that the energy levels are discrete and quantized functions of the real coupling constant $g$, However from the more general complex-variable perspective in which the coupling constant is complex, we can see that the energy levels of a hamiltonian are in fact continuous functions of the complex coupling constant $g$\cite{BenderPT}. 
@@ -456,13 +486,13 @@ Using the WKB integral quantisation condition I calculated how much phase is gai
 
 
 
-\section{Conclusion}
-\blindtext
+\chapter{Conclusion}\label{Conclusion}
 
-\section{Acknowledgements}
+\chapter{Acknowledgements}\label{Acknowledgements}
+I want to thank my supervisors Jesper and Meera for giving me their time and for guiding me through the semester with their ideas and suggestions. I truly enjoyed all of the moments when we met to discuss physics and other topics. I also want to thank Daniel Price for giving me the opportunity to try out research in a formal setting by accepting my request to join this research unit and for being so attentive and responsive to my emails. Lastly, I want to thank my partner Chris for being an endless source of inspiration, helpful advice and for all our interesting rants and discussions. 
 
-\section{Appendix}
-I want to thank my supervisors Jesper and Meera for giving me their time and for guiding me through the semester with their ideas and suggestions. I truly enjoyed all of the moments when we met to discuss physics and other topics. I also want to thank Daniel Price for giving me the opportunity to try out research in a formal setting by accepting my request to join this research unit and for being so attentive and responsive to my questions. Lastly, I want to thank my partner Chris for being an endless source of inspiration, helpful advice and for all our interesting rants and discussions. 
+\chapter{Appendix}\label{Appendix}
+
 % %----------------------------------------------------------------------------------------
 % %   ABBREVIATIONS
 % %----------------------------------------------------------------------------------------
