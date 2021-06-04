@@ -309,7 +309,7 @@ Equation (\ref{eq:19}) cannot be solved exactly using analytic methods for $\eps
 
 \section{Methods}
 \subsection{WKB approximation}\label{WKB}
-To solve equation (\ref{eq:19}) I had to find out which were the boundary conditions for the problem. I learned from several sources that the boundary conditions depend on the deformation parameter $\epsilon$ \cite{BenderPT}\cite{Bender}\cite{Bender2017}. Since the eigenvalue problem can be conceptualised as a harmonic oscillator that has been deformed into the complex x-plane we need to reframe the spatial variable $x$ as $x = r e^{i\theta}$ , finding the solutions requires that I integrate equation (\ref{eq:19}) along a contour in the complex x-plane and that the solution be equal to zero at both ends of this contour\cite{BenderPT}. According to Bender, the integration contour should be located within two angular sectors in the complex x-plane as $|x| \rightarrow \infty$. These sectors are called \emph{Stokes wedges}\cite{BenderPT}\cite{Bender}, in general these wedges are centred about the origin in the complex x-plane and we can define their orientation the complex x-plane in terms of
+To solve equation (\ref{eq:19}) I had to find out which were the boundary conditions for the problem. I learned from several sources that the boundary conditions depend on the deformation parameter $\epsilon$ \cite{BenderPT}\cite{Bender}\cite{Bender2017}. Since the eigenvalue problem can be conceptualised as a harmonic oscillator that has been deformed into the complex x-plane we need to re-frame the spatial variable $x$ as $x = r e^{i\theta}$, finding the solutions requires that I integrate equation (\ref{eq:19}) along a contour in the complex x-plane and that the solution be equal to zero at both ends of this contour\cite{BenderPT}. According to Bender, the integration contour should be located within two angular sectors in the complex x-plane as $|x| \rightarrow \infty$. These sectors are called \emph{Stokes wedges}\cite{BenderPT}\cite{Bender}, in general these wedges are centred about the origin in the complex x-plane and we can define their orientation the complex x-plane in terms of
 \begin{align} \label{eq:20}
 &-\frac{1}{4} \pi  < \mathrm{arg}x < \frac{1}{4}\pi& &\mathrm{and}& &\frac{3}{4} \pi  < \mathrm{arg}x < \frac{5}{4}\pi& 
 \end{align}
@@ -396,9 +396,8 @@ where $H_0(x) = 1 $ and $H_1(x) = 2x$. The recursion relation partly eliminates 
 For $x>38$ the factor $\mathrm{e}^{-x^2/2}$ is smaller than any number that can be represented as a double precision floating point number. A very robust remedy to numerical underflow was sketched in BIT Numerical Mathematics, Vol. 49, pp 281-295. The basic idea is to keep the magnitude of the modified Hermite polynomials on the order of one during their calculation via the recurrence relation (\ref{eq:31}) by introducing a suitable normalizing factor. During the calculation one has to keep track of the sum of the logarithms of these normalizing factors. Then the factor $\mathrm{e}^{-x^2/2}$ has to be modified by this sum when the value of the Hermite function is calculated. This algorithm allows to calculate the values of high-order Hermite functions even for quite large arguments\cite{Bauke}.\\
 
 Once I Implemented the changes to my code suggested by Bauke's work, my matrix elements were actually computed but the speed of each integral I calculated was incredibly slow. My numerics required some Cython to allow the code to compile the function using C in order to bypass the limitations that come from using exclusively Python. My partner Chris helped me with this step and he translated my code into Cython for me. The algorithm is still the same complexity as before $(O(N^3))$ but the calculations were compiled approximately $380\times$ faster than when I used Python code. Still, for discretising my range of $\epsilon$ I decided to use 100 values and so I had to calculate 100 Hamiltonian matrices so the code ran overnight.
-
+\vspace{20cm}
 \section{Results}
-
 \subsection{The region of unbroken \PT-symmetry}\label{PT unbroken}
 Using the WKB integral quantisation condition I calculated how much phase is gained by traversing a contour in the complex plane from one of the roots of the equation $E = x^2(ix)^\epsilon$ to another. Here I compare my numerical results for the energies pertaining to the unbroken \PT-symmetry region $(\epsilon \geq 0)$ in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders} with the energies reported in Bender's paper ``Making sense of non-Hermitian Hamiltonians'' by plotting my obtained energy values together with Bender's calculated numerical energies, Bender's values are reported to have been obtained by the WKB integral and by Runge-Kutta.
 \begin{Figure}
@@ -406,14 +405,14 @@ Using the WKB integral quantisation condition I calculated how much phase is gai
 \includegraphics[width=\linewidth]{comparing_to_bender(4).pdf}
 \captionof{figure}{From left to right the image is zoomed. Here I demonstrate that my WKB energy results (visible as the blue plot) for the case on the non-Hermitian, \PT-symmetric Hamiltonian $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})$ (ie. the case: $\epsilon = 1$) are in agreement with the energy values reported in Bender's work. Bender's results were obtained by the Runge-Kutta method (orange plot) and by the WKB approximation (green plot). All the energies (energy is the vertical axis) presented in this plot were obtained using $n \in [0,9]$. $n$ is visible as the horizontal axis for this plot.}
 \end{Figure}
-
 \begin{Figure}
 \centering
 \includegraphics[width=0.75\linewidth]{unbroken_symmetry.pdf}
 \captionof{figure}{My implementation of the WKB method on the family of non-Hermitian, \PT-symmetric Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for $\epsilon \geq 0$. My energy values (energy is the vertical axis) were in agreement with those visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. All the energies presented in this plot are real valued, and they are bounded below by the eigenvalues corresponding to the ground-state visible here as a blue plot.The changing colours of every plot represent increasing values of n corresponding to the left hand side expression in the WKB quantisation condition: \mbox{$\left (n + \frac{1}{2} \right )\pi$}. The horizontal axis is the range of values $0 \leq \epsilon \leq 3$.}
 \end{Figure}
-
+\vspace{20cm}
 \subsection{The region of broken \PT-symmetry}\label{PT broken}
+I solved the eigenvalue problem presented in equation (\ref{eq:19}) for one hundred different parametric Hamiltonians as per equation (\ref{eq:17}). I obtained my numerical results for the eigenvalue spectra of each Hamiltonian for one of the $\epsilon$ values in the discretised range of a hundred values ranging from 0 to -1. My obtained energy values matched the plotted energies reported in Bender’s paper “Making sense of non-Hermitian Hamiltonians”, and Bender et al. ``Behaviour of eigenvalues in a region of broken pt symmetry''.
 \begin{Figure}
  \centering
  \includegraphics[width=0.75\linewidth]{broken_region.pdf}
@@ -447,8 +446,10 @@ The asymptotic behaviour of the solutions to equation (\ref{eq:19}) for large $|
 \begin{Figure}
  \centering
  \includegraphics[width=0.75\linewidth]{Stokes_wedges.pdf}
- \captionof{figure}{Four instances of \emph{Stokes wedges} changing as functions of $\epsilon$.For the cases when $\epsilon > 0$ the opening angles of the sectors decrease and the sectors rotate downward (both changes are respective to the $\epsilon = 0$ case). If $\epsilon = 0$), the angular opening is equal to $\pi/2$ and are centred about the positive-real and the negative-real axis.  For the the cases of $\epsilon < 0$ the angular behaviour is opposite to the positive $\epsilon$ values. The wedges get wider and rotate upwards (both changes are respective to the $\epsilon = 0$ case) the changes, get more dramatic for decreasing $\epsilon$ values. In the case of $\epsilon = -1$ the wedges fuse into one along the logarithmic branch cut on the positive-imaginary line. We can describe the topology of this scenario as the logarithmic Riemann surface collapsing onto a single sheet. When this occurs, The spectrum becomes null, meaning that there are no eigenvalues at all\cite{BenderPT}\cite{Bender2017}.}
+ \captionof{figure}{Four instances of \emph{Stokes wedges} changing as functions of $\epsilon$. For the cases when $\epsilon > 0$ the opening angles of the sectors decrease and the sectors rotate downward (both changes are respective to the $\epsilon = 0$ case). If $\epsilon = 0$, the angular opening is equal to $\pi/2$ and are centred about the positive-real and the negative-real axis.  For the the cases of $\epsilon < 0$ the angular behaviour is opposite to the positive $\epsilon$ values. The wedges get wider and rotate upwards (both changes are respective to the $\epsilon = 0$ case) the changes, get more dramatic for decreasing $\epsilon$ values. In the case of $\epsilon = -1$ the wedges fuse into one along the logarithmic branch cut on the positive-imaginary line. We can describe the topology of this scenario as the logarithmic Riemann surface collapsing onto a single sheet. When this occurs, The spectrum becomes null, meaning that there are no eigenvalues at all\cite{BenderPT}\cite{Bender2017}.}
 \end{Figure}
+
+MORE TO COME HERE
 
 \section{\PT-symmetry breaking}\label{PT breaking}
 
@@ -484,6 +485,8 @@ The asymptotic behaviour of the solutions to equation (\ref{eq:19}) for large $|
 % % When we extend the parameters (the coupling constants) of a Hamiltonian into the complex domain, we find that the energy eigenvalues are all branches of a multivvalued function , they are analytical continuations of one another and can be continuously deformed into one another by varying the parameters. Energy levels are in a one to one correspondence with the sheets of a Riemann surface. From the narrow perspective of real variables this topological interpretation is invisible.
 
 
+I have already explained that when a non-Hermitian Hamiltonian satisfies \PT-symmetry (unbroken) the energy spectrum of the Hamiltonian in question has all real eigenvalues.
+Does this mean that the Hamiltonian I studied can be used to describe actual physics? The short answer is yes. The long answer requires the definition of a new non-trivial linear operator called the \emph{C} operator. However, this topic was beyond my research. 
 
 
 \chapter{Conclusion}\label{Conclusion}
