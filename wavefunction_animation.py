@@ -91,20 +91,20 @@ def spatial_wavefunctions(N, x, epsilons, evals, evects):
             eigenstates.append(psi_jx)
 
         fig, ax = plt.subplots()
-        # # probability density
-        # plt.plot(x, abs(eigenstates[0])**2, "-", color='blue', linewidth=1, label=fr"$|\psi_1|^2$") # first excited state
-        # plt.plot(x, abs(eigenstates[1])**2, "-", color='orange', linewidth=1, label=fr"$|\psi_2|^2$") # second excited state
+        # probability density
+        plt.plot(x, abs(eigenstates[0])**2, "-", color='blue', linewidth=1, label=fr"$|\psi_1|^2$") # first excited state
+        plt.plot(x, abs(eigenstates[1])**2, "-", color='orange', linewidth=1, label=fr"$|\psi_2|^2$") # second excited state
 
-        # spatial wavefunctions
-        plt.plot(x, np.real(eigenstates[0]), "-", color='blue', linewidth=1, label=fr"real $\psi_1$") # first excited state
-        plt.plot(x, np.real(eigenstates[1]), "-", color='orange', linewidth=1, label=fr"real $\psi_2$") # second excited state
-        plt.plot(x, np.imag(eigenstates[0]), "--", color='blue', linewidth=0.4, label=fr"imaginary $\psi_1$") # first excited state
-        plt.plot(x, np.imag(eigenstates[1]), "--", color='orange', linewidth=0.4, label=fr"imaginary $\psi_2$") # second excited state
+        # # spatial wavefunctions
+        # plt.plot(x, np.real(eigenstates[0]), "-", color='blue', linewidth=1, label=fr"real $\psi_1$") # first excited state
+        # plt.plot(x, np.real(eigenstates[1]), "-", color='orange', linewidth=1, label=fr"real $\psi_2$") # second excited state
+        # plt.plot(x, np.imag(eigenstates[0]), "--", color='blue', linewidth=0.4, label=fr"imaginary $\psi_1$") # first excited state
+        # plt.plot(x, np.imag(eigenstates[1]), "--", color='orange', linewidth=0.4, label=fr"imaginary $\psi_2$") # second excited state
 
         plt.legend(loc="upper right")
         plt.xlabel(r'$x$')
-        # plt.ylabel(r'$ |\psi_{n}|^2$')
-        plt.ylabel(r'$ \psi_{n}$')
+        plt.ylabel(r'$ |\psi_{n}|^2$')
+        # plt.ylabel(r'$ \psi_{n}$')
         textstr = '\n'.join((
             fr'$E_1 = {eigenvalues[0]:.03f}$',
             fr'$E_2 = {eigenvalues[1]:.03f}$',
@@ -114,7 +114,7 @@ def spatial_wavefunctions(N, x, epsilons, evals, evects):
         # place a text box in upper left in axes coords
         ax.text(0.02, 1.15, textstr, transform=ax.transAxes, verticalalignment='top')
         plt.savefig(f"density_spatial_wavefunctions/wavefunction_{i:03d}.png")
-        plt.savefig(f"spatial_wavefunctions/wavefunction_{i:03d}.png")
+        # plt.savefig(f"spatial_wavefunctions/wavefunction_{i:03d}.png")
         plt.clf()
     return eigenvalues, eigenstates
 

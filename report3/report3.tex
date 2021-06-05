@@ -105,7 +105,7 @@ It is the one that is the most adaptable to change.''}\bigbreak
 %----------------------------------------------------------------------------------------
 
 \begin{abstract}\label{Abstract}
-\blindtext
+Non-Hermitian quantum mechanics is a robust extension to quantum theory based on the redefinition of the Hermicity condition expected from operators in quantum mechanics. If only Hermicity is replaced by \PT-symmetry but all other postulates of quantum theory are preserved, the number of possible systems available to study using quantum theory is expanded. In this theoretical project I investigate the properties of a parametric family of non-Hermitian but \PT-symmetric Hamiltonians. My main results are the reproduction of a figure showing the eigenvalue spectra of this family of Hamiltonians. The figure demonstrates a clear image of \PT-symmetry and how the boundedness, reality and complexity of eigenspectra is directly dependent on the broken or unbroken quality of the Hamiltonians' \PT-symmetry. The figure exhibits several non-Hermitian spectral degeneracies known as exceptional points. In this work I also create a visualisation of the behaviour of two eigenstates for the family of parametric Hamiltonians. In this visualisation it is possible to see how the structure of the eigenstates changes in the regions of broken \PT-symmetry specifically, as the states approach the parametric value corresponding to an exceptional point. By varying the parameter that characterizes the Hamiltonians, I demonstrate that the states behave as mirror images of each other in the parametric region past the exceptional point value, but the states are themselves symmetric about zero before crossing the exceptional point.
 \end{abstract}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -292,7 +292,7 @@ The numerical formula in equation (\ref{eq:16}) propagates a solution over a tim
 \begin{Figure}
 \centering
 \includegraphics[width=\linewidth]{propagating_wave_with_reflection.pdf}
-\captionof{figure}{These are 6 frames of my simulation of a right propagating Gaussian wave packet in space as a function of time.The horizontal axes of every frame correspond to the spatial coordinate x (dimensionless) and the vertical axes of every frame correspond to the real and imaginary parts of the Gaussian wave packet. The earliest time frame is the top left panel, corresponding to wave packet at time t =  15600 as can be seen in that plot's title. An ``undesirable" reflection of the real part of the wave packet at the boundary is visible specially in the last 3 frames from left to right, corresponding to times t = 24000, t = 26800 and t = 29600 as can be seen in the plots' titles from left to right respectively.}
+\captionof{figure}{These are 6 frames of my simulation of a right propagating Gaussian wave packet in space as a function of time.The horizontal axes of every frame correspond to the spatial coordinate x (dimensionless) and the vertical axes of every frame correspond to the real and imaginary parts of the Gaussian wave packet. The earliest time frame is the top left panel, corresponding to wave packet at time t =  15600 as can be seen in that plot's title. The panels in this arrangement should be studied from left to right and top to bottom. An ``undesirable" reflection of the real part of the wave packet at the boundary is visible specially in the last 3 frames from left to right, corresponding to times t = 24000, t = 26800 and t = 29600 as can be seen in the plots' titles from left to right respectively.}
 \end{Figure}
 Understanding the implementation of the potential characteristic to this non-Hermitian technique simulation required a lot of reading and I ambitiously decided to leave this project unfinished in the meantime and continue with it after I successfully replicated Figure 1. in Bender. A project which I naively expected to finish quickly.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -320,7 +320,7 @@ Equation (\ref{eq:19}) cannot be solved exactly using analytic methods for $\eps
 \subsection{WKB approximation}\label{WKB}
 To solve equation (\ref{eq:19}) I had to find out which were the boundary conditions for the problem. I learned from several sources that the boundary conditions depend on the deformation parameter $\epsilon$ \cite{BenderPT}\cite{Bender}\cite{Bender2017}. Since the eigenvalue problem can be conceptualised as a harmonic oscillator that has been deformed into the complex x-plane we need to re-frame the spatial variable $x$ as $x = r e^{i\theta}$, finding the solutions requires that I integrate equation (\ref{eq:19}) along a contour in the complex x-plane and that the solution be equal to zero at both ends of this contour\cite{BenderPT}. According to Bender, the integration contour should be located within two angular sectors in the complex x-plane as $|x| \rightarrow \infty$. These sectors are called \emph{Stokes wedges}\cite{BenderPT}\cite{Bender}, in general these wedges are centred about the origin in the complex x-plane and we can define their orientation the complex x-plane in terms of
 \begin{align} \label{eq:20}
-&-\frac{1}{4} \pi  < \mathrm{arg}x < \frac{1}{4}\pi& &\mathrm{and}& &\frac{3}{4} \pi  < \mathrm{arg}x < \frac{5}{4}\pi& 
+&-\frac{1}{4} \pi  < \theta < \frac{1}{4}\pi& &\mathrm{and}& &\frac{3}{4} \pi  < \theta < \frac{5}{4}\pi& 
 \end{align}
 the eigenfunctions of the problem vanish exponentially at both ends of the integration contour.\
 Determining the locations of the \emph{Stokes wedges} is in general not necessary to solve the differential equation exactly\cite{BenderPT}. For the purpose of my eigenvalue problem, it is only required to understand the asymptotic behaviour of the solutions for large $|x|$ values.\\
@@ -386,7 +386,7 @@ An important part of my integral calculations was the need to choose the integra
 To iteratively calculate the matrix elements as they are written in equation (\ref{eq:28}) I once again, used the \emph{complex\_quad()} function I wrote myself since the integrand of each matrix element integral was complex-valued. My modified function calculates the integral for the real part and the integral for imaginary part of the integrand separately and it returns the total integral as a linear combination of the real plus $i$ times the imaginary part.\\
 \\Finally, my code repeated this procedure and calculated one hundred $100\times100$ matrices. One matrix for each $\epsilon$ in my discretised region for $\epsilon$ values between 0 and -1.
 
-Constructing the integrand for each matrix element as per equation (\ref{eq:28}), ie. \mbox{$\psi_m(x)^* \left (  - \frac{d^2}{dx^2} + x^2(ix)^{\epsilon}\right ) \psi_n(x)$} was computationally expensive, because it required the calculation of the harmonic oscillator basis states $\psi_m$ and $\psi_n$, and that of the Hamiltonian. To numerically calculate the second order derivative in the Hamiltonian I used a finite centred differences approximation
+Constructing the integrand for each matrix element as per equation (\ref{eq:28}), was computationally expensive, because it required the calculation of the harmonic oscillator basis states $\psi_m$ and $\psi_n$, and that of the Hamiltonian. To numerically calculate the second order derivative in the Hamiltonian I used a finite centred differences approximation
 \begin{equation}\label{eq:29}
 \frac{d^2 \psi_n(x)}{dx^2} = \frac{\psi_n(x + h) - 2 \psi_n(x) + \psi_n(x - h)}{h^2}
 \end{equation}
@@ -450,29 +450,32 @@ I solved the eigenvalue problem presented in equation (\ref{eq:19}) for one hund
  \includegraphics[width=0.75\linewidth]{broken_region.pdf}
  \captionof{figure}{This plot is an extension of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. Here I display the discretised space of $\epsilon$ as 100 values in the horizontal axis, and the eigenvalues of the parametric family of \PT-symmetric,  non-hermitian Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ for the region corresponding to $\epsilon \leq 0$ in the vertical axis. This figure depicts fully real eigenvalues (black dots) and the points at which the eigenvalues become degenerate and then form complex-conjugate pairs. The real parts of these pairs of eigenvalues (blue dots) initially decrease as $\epsilon$ decreases but blow up suddenly as $\epsilon$ approaches -1. The imaginary parts of the eigenvalue pairs (red dots) remain finite and appear to decay to zero at  $\epsilon = -1$.}
 \end{Figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The final result}\label{Final}
+\subsection{The behaviour of eigenstates}\label{Eigenstates}
+\begin{Figure}
+ \centering
+ \includegraphics[width=\linewidth]{eigenstates.pdf}
+ \captionof{figure}{These are 6 frames in the visualisation of the behaviour of the first and second excited states for the Hamiltonian in equation (\ref{eq:17}) in the region of broken \PT-symmetry. The horizontal axes of each plot represent the x coordinate, and the vertical axes represent the wave functions. In addition to the legend I have added on the top left corner of each of the plots the corresponding eigenvalues to each of the wave functions, and the corresponding $\epsilon$ value to make note of this parametric dimension. On the top left panel, the $\epsilon$ value is most negative. The plots in this arrangement should be studied from left to right and top to bottom. Here I demonstrate how the structure of the eigenstates changes as we approach the $\epsilon$ value corresponding to the \textbf{exceptional point} (approximately $\epsilon = -0.576$). As $\epsilon$ varies, we can see the wave functions behave as mirror images of each other when the $\epsilon$ value is more negative than the exceptional point. Then at the approximate value of the exceptional point (visible in the top right plot), the wave functions overlap. As the $\epsilon$ values become less negative than the exceptional point, the states themselves become symmetric about zero. At the bottom right plot, we see that the states are the first and second excited states of the harmonic oscillator, ie. $\epsilon = 0$.}
+\end{Figure}
+
+\begin{Figure}
+ \centering
+ \includegraphics[width=\linewidth]{amplitudes.pdf}
+ \captionof{figure}{These are 6 frames in the visualisation of the behaviour of the probability density of the first and second excited states for the Hamiltonian in equation (\ref{eq:17}) in the region of broken \PT-symmetry.Similarly to the previous figure, the horizontal axes of each plot represent the x coordinate, and the vertical axes represent the probability density of the states. In addition to the legend I have added on the top left corner of each of the plots the corresponding eigenvalues to each state, and the corresponding $\epsilon$ value to make note of this parametric dimension. On the top left panel, the $\epsilon$ value is most negative. The plots in this arrangement should be studied from left to right and top to bottom. Here I demonstrate how the eigenstates densities change as we approach the $\epsilon$ value corresponding to the \textbf{exceptional point} (approximately $\epsilon = -0.576$). As $\epsilon$ varies, we can see the densities behave as mirror images of each other when the $\epsilon$ value is more negative than the exceptional point. Then at the approximate value of the exceptional point (visible in the top right plot), the densities overlap. As the $\epsilon$ values become less negative than the exceptional point, the densities themselves become symmetric about zero. At the bottom right plot, we see that the states densities correspond to those of the first and second excited states of the harmonic oscillator, ie. $\epsilon = 0$.}
+\end{Figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{The full version of the figure}\label{Final}
 \begin{Figure}
  \centering
  \includegraphics[width=0.75\linewidth]{my_figure_1.pdf}
  \captionof{figure}{My rendition of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. This figure has all the same characteristics as Bender's original figure.
  All energies presented in this plot are real valued. The $\epsilon$ values are visible in the horizontal axis, while the vertical axis is the energy eigenvalues for each Hamiltonian in the parametric family $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$. The vertical dotted green line corresponds to the value $\epsilon = 0$, which itself corresponds to the 1D classical harmonic oscillator Hamiltonian $\hat{H} = \hat{p}^2 + \hat{x}^2$. Above the value $\epsilon = 0$ all values in the spectra are fully real, positive and discrete. Energy levels increase with increasing $\epsilon$. In $-1 \leq \epsilon \leq 0$ region there is a finite number of real positive eigenvalues and an infinite number of complex-conjugate pairs of eigenvalues (the complex values are not depicted in this figure). The number of real eigenvalues decreases as $\epsilon$ decreases from 0 to -1 , for $\epsilon$ values that are more negative than the value $\epsilon = -0.57793$ the only remaining real eigenvalue corresponds to the ground-state energy. At the value $\epsilon = -1$ the spectrum is null, as all eigenvalues diverge towards positive infinity.}
 \end{Figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Eigenstates}\label{Eigenstates}
-\begin{Figure}
- \centering
- \includegraphics[width=\linewidth]{eigenstates.pdf}
- \captionof{figure}{}
-\end{Figure}
-
-\begin{Figure}
- \centering
- \includegraphics[width=\linewidth]{amplitudes.pdf}
- \captionof{figure}{}
-\end{Figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Discussion}\label{Discussion}
@@ -491,23 +494,24 @@ The bounds ($x_{\pm}$) of the integral in equation (\ref{eq:23}) are turning poi
 One aspect of the complex WKB method that I found quite unintuitive was the determination of the boundary conditions for the differential equation (\ref{eq:19}).\\
 The WKB method works for the $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ eigenvalue problems for values of $\epsilon \geq 0$ because the sub-dominant eigenfunctions vanish exponentially in two \emph{Stokes wedges} in the complex x-plane. The eigenfunctions will vanish most rapidly at the centres of the wedges; at the edges of the wedges the eigenfunctions just oscillate and no longer vanish exponentially\cite{BenderPT}.\\\\
 The \emph{Stokes wedges} I studied are always centred about the origin of the complex x-plane. As I described in section \ref{WKB}, their angular orientation in the complex x-plane can be described by the argument of the complex variable $x = re^{i\theta}$.\\
-The limits of integration used in the WKB technique are analogous to classical turning points. Ie. the total energy of the system $E$ obeys the equation $E = x^2 (ix)^{\epsilon}$, his equation has many complex solutions. However, since we are interested in $E$ being real, we are concerned with what happens to two turning points that lie on the real axis at $\pm \sqrt{E}$ when $\epsilon = 0$ as $\epsilon$ increases\cite{BenderPT}.
+The limits of integration used in the WKB technique are analogous to classical turning points. Ie. the total energy of the system obeys the equation $E = x^2 (ix)^{\epsilon}$ and this equation has many complex solutions. However, since we are interested in $E$ being real, we are concerned with what happens to two turning points that lie on the real axis at $\pm \sqrt{E}$ when $\epsilon = 0$ as $\epsilon$ increases\cite{BenderPT}.
 The form of the turning points I wrote in equation (\ref{eq:22}) is 
 \begin{align} \label{eq:32}
 x_{-}& = 
 E^{\frac{1}{\epsilon + 2}}
-e^{i\theta_{\mathrm{left}}}
+e^{i\theta_{-}}
 &\mathrm{and}&
-&x_{+} = E^{\frac{1}{\epsilon + 2}} e^{i\theta_{\mathrm{right}}},
+&x_{+} = E^{\frac{1}{\epsilon + 2}} e^{i\theta_{+}},
 \end{align}
 where the angles are
 \begin{align} \label{eq:33}
-\theta_{\mathrm{left}}& = - \frac{4 + \epsilon}{4 + 2 \epsilon} \pi
+\theta_{-}& = \frac{4 + 3\epsilon}{4 + 2 \epsilon} \pi
 &\mathrm{and}&
-&\theta_{\mathrm{right}} = - \frac{\epsilon}{4 + 2 \epsilon} \pi.
+&\theta_{+} = - \frac{\epsilon}{4 + 2 \epsilon} \pi.
 \end{align}
-$\epsilon$ increases from 0, the turning points move into the complex plane, note that the turning points are symmetric respect to reflections along the imaginary axis. This is a direct consequence of \PT-symmetry\cite{BenderPT}.\\
-As $\epsilon$ increases from 0, a logarithmic branch-point singularity appears at the origin, as $\epsilon$ continues increasing in the positive direction, it is necessary to introduce a branch-cut running from the origin along the positive imaginary axis. In this cut plane the solutions to equation (\ref{eq:19}) are analytic and singled-valued\cite{BenderPT}.\\
+This left-right reflection symmetry is the coordinate space realisation of \PT-symmetry\cite{BenderPT}.
+When $\epsilon$ increases from 0, the turning points move into the complex plane. Notice that the turning points are symmetric respect to reflections along the imaginary axis. This is a direct consequence of \PT-symmetry\cite{BenderPT}.\\
+As $\epsilon$ increases from 0, a logarithmic branch-point singularity appears at the origin, and as $\epsilon$ continues increasing in the positive direction, it is necessary to introduce a branch-cut running from the origin along the positive imaginary axis. In this cut plane the solutions to equation (\ref{eq:19}) are analytic and singled-valued\cite{BenderPT}.\\
 
 \begin{Figure}
  \centering
@@ -544,10 +548,16 @@ Does this mean that the Hamiltonian I studied can be used to describe actual phy
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Acknowledgements}\label{Acknowledgements}
-I want to thank my supervisors Jesper and Meera for giving me their time and for guiding me through the semester with their ideas and suggestions. I truly enjoyed all of the moments when we met to discuss physics and other topics. I also want to thank Daniel Price for giving me the opportunity to try out research in a formal setting by accepting my request to join this research unit and for being so attentive and responsive to my emails. Lastly, I want to thank my partner Chris for being an endless source of inspiration, helpful advice and for all our interesting rants and discussions. 
+I want to thank my supervisors Jesper and Meera for giving me their time and for guiding me through the semester with great ideas and suggestions. I truly enjoyed all of the moments when we met to discuss physics and other topics. I also want to thank Daniel Price for giving me the opportunity to try out research in a formal setting by accepting my request to join this research unit and for being so attentive and responsive to my emails. Lastly, I want to thank my partner Chris for being an endless source of inspiration, helpful advice and for all our interesting rants and discussions. 
+
+\begin{center}
+\vspace{10cm}
+\includegraphics[scale=0.2]{bepdep.pdf}
+\vspace{10cm}
+\end{center}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Appendix}\label{Appendix}
+% \chapter{Appendix}\label{Appendix}
 
 % %----------------------------------------------------------------------------------------
 % %   ABBREVIATIONS
