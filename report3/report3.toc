@@ -13,15 +13,17 @@
 \contentsline {subsection}{\numberline {3.1.2}Matrix equations}{8}{subsection.3.1.2}%
 \contentsline {subsubsection}{Matrix elements}{9}{section*.3}%
 \contentsline {subsubsection}{Hermite functions}{10}{section*.4}%
+\contentsline {subsubsection}{Visualising eigenstates in the broken \emph {PT}-symmetry region}{10}{section*.5}%
 \contentsline {section}{\numberline {3.2}Results}{11}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}The region of unbroken \emph {PT}-symmetry}{11}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}The region of broken \emph {PT}-symmetry}{12}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}The final result}{13}{subsection.3.2.3}%
-\contentsline {chapter}{\numberline {4}Discussion}{14}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Complex WKB}{14}{section.4.1}%
-\contentsline {section}{\numberline {4.2}\emph {Stokes wedges} and boundary conditions}{14}{section.4.2}%
-\contentsline {section}{\numberline {4.3}\emph {PT}-symmetry breaking}{15}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Exceptional points}{15}{section.4.4}%
-\contentsline {chapter}{\numberline {5}Conclusion}{16}{chapter.5}%
-\contentsline {chapter}{\numberline {6}Acknowledgements}{17}{chapter.6}%
-\contentsline {chapter}{\numberline {7}Appendix}{18}{chapter.7}%
+\contentsline {subsection}{\numberline {3.2.2}The region of broken \emph {PT}-symmetry}{13}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}The final result}{14}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Eigenstates}{14}{subsection.3.2.4}%
+\contentsline {chapter}{\numberline {4}Discussion}{16}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Complex WKB}{16}{section.4.1}%
+\contentsline {section}{\numberline {4.2}\emph {Stokes wedges} and boundary conditions}{16}{section.4.2}%
+\contentsline {section}{\numberline {4.3}\emph {PT}-symmetry breaking}{17}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Exceptional points}{18}{section.4.4}%
+\contentsline {chapter}{\numberline {5}Conclusion}{20}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Acknowledgements}{21}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Appendix}{22}{chapter.7}%

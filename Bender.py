@@ -17,6 +17,7 @@ from odhobs import psi as cpsi_blank
 plt.rcParams['figure.dpi'] = 200
 np.set_printoptions(linewidth=200)
 
+E0 = 1.1563
 
 def complex_quad(func, a, b, **kwargs):
     # Integration using scipy.integratequad() for a complex function
@@ -296,35 +297,37 @@ xs = np.linspace(-20, 20, 1024)
 ##################### Runge-Kutta test call ###############################
 
 # ######################### WKB TEST 1 ####################################
-# def whats_up_with_integrand(x_values, E, ϵ):
-#     # checking the integration path of the integrand in the x-complex plane
-#     reals = []
-#     imaginary = []
-#     for x in x_values:
-#         complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
+def whats_up_with_integrand(x_values, E, ϵ):
+    # checking the integration path of the integrand in the x-complex plane
+    reals = []
+    imaginary = []
+    for x in x_values:
+        complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
 
-#         reals.append(np.real(complex_num))
-#         imaginary.append(np.imag(complex_num))
+        reals.append(np.real(complex_num))
+        imaginary.append(np.imag(complex_num))
 
-#     plt.plot(reals, imaginary, '-')
-#     plt.plot(reals[0], imaginary[0],'go', label='start here')
-#     plt.plot(reals[-1], imaginary[-1],'ro', markersize='1.2', label='finish here')
-#     plt.legend()
-#     plt.ylabel(r'$Im(\sqrt{E - x^2 (i x)^\epsilon})$')
-#     plt.xlabel(r'$Re(\sqrt{E - x^2 (i x)^\epsilon})$')
+    plt.plot(reals, imaginary, '-')
+    plt.plot(reals[0], imaginary[0],'go', label='start here')
+    plt.plot(reals[5], imaginary[5],'-o', markersize='1.2')
 
-#     # plt.title("Bender's integration contour")
-#     plt.title("change or variables integration contour")
-#     plt.show()
+    plt.plot(reals[-1], imaginary[-1],'ro', markersize='1.2', label='finish here')
+    plt.legend()
+    plt.ylabel(r'$Im(\sqrt{E - x^2 (i x)^\epsilon})$')
+    plt.xlabel(r'$Re(\sqrt{E - x^2 (i x)^\epsilon})$')
+
+    # plt.title("Bender's integration contour")
+    plt.title("change or variables integration contour")
+    plt.show()
 
 
-# # Bender's integral
-# x_values = np.linspace(tp_minus, tp_plus, 10000)
+# Bender's integral
+x_values = np.linspace(tp_minus, tp_plus, 10000)
 
-# # change of variables integral
-# x_values = np.linspace(tp_minus_prime, tp_plus_prime, 10000) + 1j * np.imag(tp_minus)
+# change of variables integral
+x_values = np.linspace(tp_minus_prime, tp_plus_prime, 10000) + 1j * np.imag(tp_minus)
 
-# whats_up_with_integrand(x_values, E0, ϵ)
+whats_up_with_integrand(x_values, E0, ϵ)
 # ######################### WKB TEST 1 #####################################
 
 ########################### WKB TEST 2 #####################################
@@ -349,7 +352,6 @@ xs = np.linspace(-20, 20, 1024)
 
 ######################## WKB unbroken region ##############################
 
-E0 = 1.1563
 # # ITERATIVE
 Energies = []
 for n in range(10):

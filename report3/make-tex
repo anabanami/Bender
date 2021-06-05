@@ -6,7 +6,7 @@ set -o errexit
 
 TEXFILE=report3
 
-rm -f *.aux *.log *.bbl *.blg *.lof *.lot
+rm -f *.aux *.log *.bbl *.blg *.lof *.lot *.out *.brf *.toc
 
 pdflatex ${TEXFILE}
 bibtex ${TEXFILE}
