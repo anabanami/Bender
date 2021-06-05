@@ -13,4 +13,4 @@ bibtex ${TEXFILE}
 pdflatex ${TEXFILE}
 pdflatex ${TEXFILE}
 
-rm -f *.aux *.log *.bbl *.blg
+rm -f *.aux *.log *.bbl *.blg *.lof *.lot *.out *.brf *.toc
