@@ -247,14 +247,44 @@ def figure_final_form():
     plt.xlabel("ϵ")
     plt.ylabel("E")
     # plt.savefig("NHH_eigenvalues.png") # MARK OR UNMARK
-    plt.show()
+    # plt.show()
     return np.array(eigenvectors_list)
 
 coefficients = figure_final_form()
 
-####################### Eigenvectors plot ##################################
+# ####################### Eigenvectors plot ##################################
 
-def spatial_wavefunctions(N, x, epsilons):
+# def spatial_wavefunctions(N, x, epsilons):
+#     x[x == 0] = 1e-200
+#     PSI_ns = []
+#     for n in range(N):
+#         psi_n = cpsi_blank(n, x)
+#         PSI_ns.append(psi_n)
+#     PSI_ns = np.array(PSI_ns)
+#     np.save(f"PSI_ns.npy", PSI_ns)
+
+#     eigenstates = []
+#     for i, ϵ in enumerate(epsilons):
+#         c = coefficients[i]
+#         for j in range(N):  # for each eigenvector
+#             d = c[:, j]
+#             psi_jx = np.zeros(x.shape, complex)
+#             for n in range(N):  # for each H.O. basis vector
+#                 psi_jx += d[n] * PSI_ns[n]
+#             plt.plot(x, abs(psi_jx) ** 2)
+#             plt.savefig(f"spatial_wavefunctions/wavefunction_{ϵ}_{n:03d}.png")
+#             plt.clf()
+#             eigenstates.append(psi_jx)
+
+#     np.save(f'eigenstates.npy', np.array(eigenstates))
+
+# N = 100
+# epsilons = np.linspace(-1.0, 0, N)
+# xs = np.linspace(-20, 20, 1024)
+# spatial_wavefunctions(N, xs, epsilons)
+# #################another one ###############################################
+
+def spatial_wavefunctions2(N, x, epsilons):
     x[x == 0] = 1e-200
     PSI_ns = []
     for n in range(N):
@@ -265,23 +295,27 @@ def spatial_wavefunctions(N, x, epsilons):
 
     eigenstates = []
     for i, ϵ in enumerate(epsilons):
+        if i != 0:
+            continue
         c = coefficients[i]
         for j in range(N):  # for each eigenvector
             d = c[:, j]
             psi_jx = np.zeros(x.shape, complex)
             for n in range(N):  # for each H.O. basis vector
                 psi_jx += d[n] * PSI_ns[n]
-                plt.plot(x, abs(psi_jx) ** 2)
-                # plt.savefig(f"spatial_wavefunctions/wavefunction_{ϵ}_{n:03d}.png")
-                plt.clf()
+            plt.plot(x, abs(psi_jx) ** 2)
+            print(f"saving {ϵ = }, {j = }")
+            plt.savefig(f"some_wavefunctions_-1/wavefunction_{ϵ}_{j:03d}.png")
+            plt.clf()
             eigenstates.append(psi_jx)
 
-    np.save(f'eigenstates.npy', np.array(eigenstates))
-
+plt.clf()
 N = 100
-epsilons = np.linspace(-1.0, 0, N)
-xs = np.linspace(-20, 20, 1024)
-# spatial_wavefunctions(N, xs, epsilons)
+# epsilons = [-0.4]
+xs = np.linspace(-20, 20, 2048)
+spatial_wavefunctions2(N, xs, epsilons)
+
+
 
 ####################### Eigenvectors plot ##################################
 
@@ -297,37 +331,37 @@ xs = np.linspace(-20, 20, 1024)
 ##################### Runge-Kutta test call ###############################
 
 # ######################### WKB TEST 1 ####################################
-def whats_up_with_integrand(x_values, E, ϵ):
-    # checking the integration path of the integrand in the x-complex plane
-    reals = []
-    imaginary = []
-    for x in x_values:
-        complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
+# def whats_up_with_integrand(x_values, E, ϵ):
+#     # checking the integration path of the integrand in the x-complex plane
+#     reals = []
+#     imaginary = []
+#     for x in x_values:
+#         complex_num = np.sqrt(E - x**2 * (1j * x)**ϵ)
 
-        reals.append(np.real(complex_num))
-        imaginary.append(np.imag(complex_num))
+#         reals.append(np.real(complex_num))
+#         imaginary.append(np.imag(complex_num))
 
-    plt.plot(reals, imaginary, '-')
-    plt.plot(reals[0], imaginary[0],'go', label='start here')
-    plt.plot(reals[5], imaginary[5],'-o', markersize='1.2')
+#     plt.plot(reals, imaginary, '-')
+#     plt.plot(reals[0], imaginary[0],'go', label='start here')
+#     plt.plot(reals[5], imaginary[5],'-o', markersize='1.2')
 
-    plt.plot(reals[-1], imaginary[-1],'ro', markersize='1.2', label='finish here')
-    plt.legend()
-    plt.ylabel(r'$Im(\sqrt{E - x^2 (i x)^\epsilon})$')
-    plt.xlabel(r'$Re(\sqrt{E - x^2 (i x)^\epsilon})$')
+#     plt.plot(reals[-1], imaginary[-1],'ro', markersize='1.2', label='finish here')
+#     plt.legend()
+#     plt.ylabel(r'$Im(\sqrt{E - x^2 (i x)^\epsilon})$')
+#     plt.xlabel(r'$Re(\sqrt{E - x^2 (i x)^\epsilon})$')
 
-    # plt.title("Bender's integration contour")
-    plt.title("change or variables integration contour")
-    plt.show()
+#     # plt.title("Bender's integration contour")
+#     plt.title("change or variables integration contour")
+#     plt.show()
 
 
-# Bender's integral
-x_values = np.linspace(tp_minus, tp_plus, 10000)
+# # Bender's integral
+# x_values = np.linspace(tp_minus, tp_plus, 10000)
 
-# change of variables integral
-x_values = np.linspace(tp_minus_prime, tp_plus_prime, 10000) + 1j * np.imag(tp_minus)
+# # change of variables integral
+# x_values = np.linspace(tp_minus_prime, tp_plus_prime, 10000) + 1j * np.imag(tp_minus)
 
-whats_up_with_integrand(x_values, E0, ϵ)
+# whats_up_with_integrand(x_values, E0, ϵ)
 # ######################### WKB TEST 1 #####################################
 
 ########################### WKB TEST 2 #####################################
@@ -353,21 +387,21 @@ whats_up_with_integrand(x_values, E0, ϵ)
 ######################## WKB unbroken region ##############################
 
 # # ITERATIVE
-Energies = []
-for n in range(10):
-    E_ϵs = []
-    for ϵ in np.linspace(0, 3, 30):
-        E_ϵ = complex_fsolve(error, E0, args=(ϵ, n))
-        E_ϵs.append(E_ϵ)
-    Energies.append(E_ϵs)
+# Energies = []
+# for n in range(10):
+#     E_ϵs = []
+#     for ϵ in np.linspace(0, 3, 30):
+#         E_ϵ = complex_fsolve(error, E0, args=(ϵ, n))
+#         E_ϵs.append(E_ϵ)
+#     Energies.append(E_ϵs)
 
-#PLOTING ITERATIVE
-for E_ϵs in Energies:
-    ϵ = np.linspace(0, 3, 30)
-    plt.plot(ϵ, E_ϵs, "o-", markersize=2)
-plt.ylim(0, 20)
-plt.xlabel("ϵ")
-plt.ylabel("E")
-plt.show()
+# #PLOTING ITERATIVE
+# for E_ϵs in Energies:
+#     ϵ = np.linspace(0, 3, 30)
+#     plt.plot(ϵ, E_ϵs, "o-", markersize=2)
+# plt.ylim(0, 20)
+# plt.xlabel("ϵ")
+# plt.ylabel("E")
+# plt.show()
 
 ######################## WKB unbroken region ##############################
