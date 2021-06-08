@@ -5,7 +5,7 @@
 
 % latexmk -pvc -pdf
 \documentclass[10pt, a4paper, singlespacing]{report}
-\usepackage[margin=0.65in]{geometry}
+\usepackage[margin=0.6in]{geometry}
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
 \usepackage{mathtools}
 \usepackage{dsfont}
@@ -30,10 +30,6 @@
   citecolor=purple,
   filecolor=purple,
   linkcolor=purple,
-  % urlcolor=black,
-  % citecolor=black,
-  % filecolor=black,
-  % linkcolor=black,
   linktocpage=true]
   {hyperref}
 
@@ -131,6 +127,7 @@ But with this robustness arise limitations. Because it is not possible to use qu
 \section{Adopting a new assumption}\label{Assumptions}
 The desire to study non-idealised systems using quantum mechanics requires that we reconsider the Hermicity postulate and replace it with one that is less restrictive.
 In addition to expanding our analytical tool-box, non-Hermitian quantum mechanics prioritises physical principles rather than mathematical ones by establishing parity-time reflection symmetry (\PT-symmetry) as a more generalisable alternative to Hermicity.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 \section{\PT-symmetric quantum mechanics}\label{PT}
@@ -244,7 +241,7 @@ I must be honest, I had a couple of ideas for my project but I only achieved one
 
 \begin{Figure}
 \centering
-\includegraphics[width=0.75\linewidth]{figure_1_Bender.pdf}
+\includegraphics[width=0.65\linewidth]{figure_1_Bender.pdf}
 \captionof{figure}{This is Figure 1. in reference \cite{Bender}.This figure exemplifies the behaviour of the eigenvalue spectra of the general parametric family of non-Hermitian Hamiltonians $\hat{H} = \hat{p}^2 + \hat{x}^2 (i \hat{x})^{\epsilon}$ as a function of the real parameter $\epsilon$. All the eigenvalues visible in this figure are real valued. The \PT-symmetry breaks at the $\epsilon = 0$, which corresponds to the Hamiltonian for the classic one dimensional harmonic oscillator. When $\epsilon \geq 0$ the spectra are real, positive and discrete. Energy levels increase with increasing $\epsilon$. In the region corresponding to $-1 \leq \epsilon \leq 0$ there is a finite number of real positive eigenvalues and an infinite number of complex-conjugate pairs of eigenvalues (not depicted). The number of real eigenvalues decreases as $\epsilon$ decreases from $0$ to $-1$, for $\epsilon$ that are more negative than the value $\epsilon = -0.57793$ the only remaining real eigenvalue corresponds to the ground-state energy. At the value $\epsilon = -1$ the spectrum is null (see image below for more details).}
 \label{fig:Benders}
 \end{Figure}
@@ -301,7 +298,8 @@ The numerical formula in equation (\ref{eq:16}) propagates a solution over a tim
 \section{Results}
 \begin{Figure}
 \centering
-\includegraphics[width=\linewidth]{propagating_wave_with_reflection.pdf}
+\hspace*{-0.9cm}
+\includegraphics[width=1.1\linewidth]{propagating_wave_with_reflection.pdf}
 \captionof{figure}{These are 6 frames of my simulation of a right propagating Gaussian wave packet in space as a function of time. The horizontal axes of every frame correspond to the spatial coordinate x (dimensionless) and the vertical axes of every frame correspond to the real and imaginary parts of the Gaussian wave packet. The earliest time frame is the top left panel, corresponding to the wave packet position at time t = 15600 as can be seen in that plot's title. The panels in this figure should be studied from left to right and top to bottom. An ``undesirable'' reflection of the wave packet interacting with the boundary is visible specially in the bottom 3 frames from left to right. These frames correspond to times t = 24000, t = 26800 and t = 29600 as can be seen in the plots' titles from left to right respectively.}
 \end{Figure}
 Understanding the implementation of the potential characteristic to this non-Hermitian technique simulation required a lot of reading and I ambitiously decided to leave this sub-project unfinished in the meantime and continue with it after I successfully replicated Figure 1. in Bender, a sub-project which I naively expected to finish quickly.
@@ -420,7 +418,7 @@ Once I Implemented the changes to my code suggested by Bauke's work, my matrix e
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Visualising eigenstates in the broken \PT-symmetry region}\label{Eigenstates explained}
-Jesper suggested that I made an animation to illustrate how the wave functions of the Hamiltonian in equation (\ref{eq:17}). change as $\epsilon$ changes in the energy $\epsilon$ diagram. The the main motivations for crating this animation were first, to verify if the eigenvectors were orthogonal, because the complex eigenstates of a non-Hermitian system are, in general, not orthogonal. And second, because we wanted to observe the coalescent behaviour of the eigenvalues present in the broken symmetry region of the spectrum. We were particularly curious to see how an eigenfunction continuously becomes another, and we were also intrigued by the point at which this transformation would be visible.\\\\
+Jesper suggested that I made an animation to illustrate how the wave functions of the Hamiltonian in equation (\ref{eq:17}). change as $\epsilon$ changes in the energy $\epsilon$ diagram. The the main motivations for crating this animation were first, to verify if the eigenvectors were orthogonal, because the complex eigenstates of a non-Hermitian system are, in general, not orthogonal (for more on this, see Discussion section \ref{Orthogonal}); Second, because we wanted to observe the coalescent behaviour of the eigenvalues present in the broken symmetry region of the spectrum. We were particularly curious to see how an eigenfunction continuously becomes another, and we were also intrigued by the point at which this transformation would be visible.\\\\
 First I decided to exclusively use the first and second excited states for the Hamiltonian in equation (\ref{eq:17}), I chose these because I can see that these states certainly coalesce in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders} and my own rendition of the figure, visible in section \ref{Final}.
 To find the eigenstates I had to sort the eigenstates list using the indices of the second and third elements of the sorted eigenvalues list I obtained by applying the \emph{scipy.linalg.eig()} module to each of my Hamiltonian matrices. To do this, I used Boolean arrays to conditionally select the eigenvalues that satisfied some filtering and sorting conditions. I filtered all the eigenvalues by requiring that the real-parts were between 0 and 20. and imposed this indexing condition on the list of eigenstates, which lead to the eigenstate list to be sorted with correspondence to the desired eigenvalues in the range $0< E < 20$.
 After this, I sorted the eigenstates by using \emph{np.argsort()} to return the indices that would sort the array based on the eigenvalue array. The \emph{np.argsort()} module performs an indirect sort along the given axis using the algorithm specified by the kind keyword. My sorting keyword used the rounded real-part of the eigenvalues up to 3 significant figures plus the scaled by one in a millionth rounded imaginary-part of the eigenvalues up to 3 significant figures. This condition allowed the sorting to be principally influenced by the real-part of the eigenvalue and only be influenced by the imaginary part if the real parts were exactly equal. The \emph{np.argsort()} module returns an array of indices of the same shape as a that index data along the given axis in sorted order\cite{argsort}.\\
@@ -434,7 +432,7 @@ Since the eigenstates might be returned with an arbitrary phase. In order to avo
 \psi_{jx} = \psi_{jx} e^{-iArg(\psi_{jx})},
 \end{equation}
 Finally, I obtained one hundred plots that were to be used as animation frames for my oral presentation. I also made some plots to observe how the probability amplitudes of the eigenstates behaved as $\epsilon$ ranged between 0 and -1.
-
+\vspace*{5cm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Results}
@@ -448,33 +446,35 @@ Using equation (\ref{eq:23}), I calculated how much phase is gained by traversin
 \end{Figure}
 \begin{Figure}
 \centering
-\includegraphics[width=0.7\linewidth]{unbroken_symmetry.pdf}
+\includegraphics[width=0.75\linewidth]{unbroken_symmetry.pdf}
 \captionof{figure}{My implementation of the WKB method on the family of non-Hermitian, \PT-symmetric Hamiltonians in equation (\ref{eq:17}), for positive $\epsilon$ values. The horizontal axis is the range of values $0 \leq \epsilon \leq 3$ and the vertical axis is the eigen-energy range $0 \leq E \leq 20$. My energy values are in agreement with those visible in Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. All the energies presented in this plot are real valued, and they are bounded below by the eigenvalues corresponding to the ground-state for each $\epsilon$ dependent Hamiltonian in equation (\ref{eq:17}) (visible as the lowest energies in the blue graph).The changing colours of every plot represent increasing values of n corresponding to the left hand side expression in the WKB quantisation condition (equation (\ref{eq:23}))}
 \end{Figure}
-% \vspace{20cm}
+\vspace{5cm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{The region of broken \PT-symmetry}\label{PT broken}
 I solved the eigenvalue problem presented in equation (\ref{eq:19}) for one hundred different parametric Hamiltonians as per equation (\ref{eq:17}). I obtained my numerical results for the eigenvalue spectra of each Hamiltonian for one of the $\epsilon$ values in the discretised range of a hundred values ranging from 0 to -1. My obtained energy values matched the plotted energies reported in Bender’s paper “Making sense of non-Hermitian Hamiltonians”, and Bender et al. ``Behaviour of eigenvalues in a region of broken pt symmetry''.
 \begin{Figure}
  \centering
- \includegraphics[width=0.7\linewidth]{broken_region.pdf}
+ \includegraphics[width=0.75\linewidth]{broken_region.pdf}
  \captionof{figure}{This plot is an extension of Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}. This figure depicts the eigenvalues of the parametric family of Hamiltonians in equation (\ref{eq:17}) for the region corresponding to $\epsilon \leq 0$ . Here I display a discretised  parameter space for $\epsilon$ as 100 values in the horizontal axis, and the eigen-energy range $-2 \leq E \leq 12$ as the vertical axis. This figure depicts fully real eigenvalues as black dots. Visible here are three epsilon values at which the real eigenvalues become degenerate (coalesce) and then form complex-conjugate pairs. The real parts of these pairs of eigenvalues are represented as blue dots. These initially decrease as $\epsilon$ decreases but blow up suddenly as $\epsilon$ approaches -1. The imaginary parts of the eigenvalue pairs are represented as red dots. These remain finite and appear to decay to zero at $\epsilon = -1$.}
 \end{Figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{The behaviour of eigenstates}\label{Eigenstates}
+
 \begin{Figure}
  \centering
- \includegraphics[width=\linewidth]{eigenstates.pdf}
- \captionof{figure}{These are 6 frames in the visualisation of the behaviour of the first and second excited states for the Hamiltonian in equation (\ref{eq:17}) in the region of broken \PT-symmetry. The horizontal axes of each plot represent the $x$ coordinate in a range of -10 to 10, and the vertical axes represent the wave functions $\psi_n(x)$. In addition to the legend I have added on the top left corner of each of the panels the corresponding eigenvalues to each of the first and second excited states ($E_1$ and $E_2$), and the corresponding $\epsilon$ value to make note of this parametric dimension. On the top left panel, the $\epsilon$ value is zero. The panels in this figure should be studied from left to right and top to bottom. Here I demonstrate how the structure of the eigenstates changes as we approach the $\epsilon$ value corresponding to the \textbf{exceptional point} (approximately $\epsilon = -0.576$). As $\epsilon$ varies from 0 to -1. At the top left panel, we see that the states are the first and second excited states of the harmonic oscillator, ie. $\epsilon = 0$.  in the region where $\epsilon$ is less negative than the exceptional point, the states are symmetric about zero. As $\epsilon$ approaches the exceptional point from the left, the states begin to overlap. We can see the wave functions behave as mirror images of each other after $\epsilon$ becomes more negative than the exceptional point.}
+ \hspace*{-0.9cm}
+ \includegraphics[width=1.1\linewidth]{eigenstates.pdf}
+ \captionof{figure}{These are 6 frames in the visualisation of the behaviour of the first and second excited states for the Hamiltonian in equation (\ref{eq:17}) in the region of broken \PT-symmetry. The horizontal axes of each plot represent the $x$ coordinate in a range of -10 to 10, and the vertical axes represent the wave functions $\psi_n(x)$. In addition to the legend I have added on the top left corner of each of the panels the corresponding eigenvalues to each of the first and second excited states ($E_1$ and $E_2$), and the corresponding $\epsilon$ value to make note of this parametric dimension. The panels in this figure should be studied each row from top to bottom from left to right. Here I demonstrate how the structure of the eigenstates changes as we approach the $\epsilon$ value corresponding to the \textbf{exceptional point}. The exceptional point frame is marked with a yellow star. This frame corresponds to the value $\epsilon = -0.576$. As $\epsilon$ varies from 0 to -1. At the top left panel, we see that the states are the first and second excited states of the harmonic oscillator, ie. $\epsilon = 0$.  in the region where $\epsilon$ is less negative than the exceptional point, the states are symmetric about zero. As $\epsilon$ approaches the exceptional point from the left, the states begin to overlap. We can see the wave functions behave as mirror images of each other after $\epsilon$ becomes more negative than the exceptional point.}
 \end{Figure}
 
 \begin{Figure}
  \centering
- \includegraphics[width=\linewidth]{amplitudes.pdf}
- \captionof{figure}{These are 6 frames in the visualisation of the behaviour of the probability density of the first and second excited states for the Hamiltonian in equation (\ref{eq:17}) in the region of broken \PT-symmetry. Similarly to the previous figure, the horizontal axes of each plot represent the $x$ coordinate in a range of -10 to 10, and the vertical axes represent the probability density of the wave functions $|\psi_n(x)|^{2}$. In addition to the legend I have added on the top left corner of each of the panels the corresponding eigenvalues to each of the first and second excited states ($E_1$ and $E_2$), and the corresponding $\epsilon$ value to make note of this parametric dimension. On the top left panel, the $\epsilon$ value is zero. The panels in this figure should be studied from left to right and top to bottom. Here I demonstrate how the structure of the probability density of eigenstates changes as we approach the $\epsilon$ value corresponding to the \textbf{exceptional point} (approximately $\epsilon = -0.576$). At the top left panel, we see that the probability density of the states are the those corresponding to the first and second excited states of the harmonic oscillator, ie. $\epsilon = 0$.  in the region where $\epsilon$ is less negative than the exceptional point, the probability densities themselves are symmetric about zero. As $\epsilon$ approaches the exceptional point from the left, the probability densities begin to overlap. We can see the densities of the wave functions behave as mirror images of each other after $\epsilon$ becomes more negative than the exceptional point.}
+  \hspace*{-0.9cm}
+ \includegraphics[width=1.1\linewidth]{amplitudes.pdf}
+ \captionof{figure}{These are 6 frames in the visualisation of the behaviour of the probability density of the first and second excited states for the Hamiltonian in equation (\ref{eq:17}) in the region of broken \PT-symmetry. Similarly to the previous figure, the horizontal axes of each plot represent the $x$ coordinate in a range of -10 to 10, and the vertical axes represent the probability density of the wave functions $|\psi_n(x)|^{2}$. In addition to the legend I have added on the top left corner of each of the panels the corresponding eigenvalues to each of the first and second excited states ($E_1$ and $E_2$), and the corresponding $\epsilon$ value to make note of this parametric dimension. The panels in this figure should be studied each row from top to bottom from left to right. Here I demonstrate how the structure of the eigenstates changes as we approach the $\epsilon$ value corresponding to the \textbf{exceptional point}. The exceptional point frame is marked with a yellow star. This frame corresponds to the value $\epsilon = -0.576$. At the top left panel, we see that the probability density of the states are the those corresponding to the first and second excited states of the harmonic oscillator, ie. $\epsilon = 0$.  in the region where $\epsilon$ is less negative than the exceptional point, the probability densities themselves are symmetric about zero. As $\epsilon$ approaches the exceptional point from the left, the probability densities begin to overlap. We can see the densities of the wave functions behave as mirror images of each other after $\epsilon$ becomes more negative than the exceptional point.}
 \end{Figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -533,7 +533,7 @@ As $\epsilon$ increases from 0, a logarithmic branch-point singularity appears a
 
 \section{\PT-symmetry breaking}\label{PT breaking}
 
-In the process of fixing several coding errors I made. I was able to explore the WKB integration method more deeply. I investigated the integration contour for the WKB integral by plotting it several times until I identified my integration issues. By following this process I verified that the turning points indeed form a closed loop of integration which follows the analogy of the classical interpretation of the turning points as the finishing and starting points of a moving classical particle.
+In the process of fixing several coding errors I made. I was able to explore the WKB integration method more deeply. I investigated the integration contour for the WKB integral by plotting it several times until I identified my integration issues. The Hamiltonian in equation (\ref{eq:17}) can be described as a complex deformed classical harmonic oscillator model, ie. $H = p^2 + x^2(ix)^{\epsilon}$. Thinking about the Hamiltonian in the non-quantized framework allows us to explore a useful analogy between our integration contour and a particle moving in classical trajectory. When $\epsilon$ assumes non-zero values $H$ deforms into the complex domain\cite{BenderPT}. If $\epsilon \geq 0$ the classical particle trajectories are closed loops, and when $\epsilon < 0$ the trajectories are open paths. This transition at $\epsilon = 0$ is the underlying cause of our observed transition between broken and unbroken \PT-symmetry at the value $\epsilon = 0$.
 \begin{Figure}
  \centering
  \includegraphics[width=0.75\linewidth]{integration_contour.pdf}
@@ -548,12 +548,32 @@ I faced a few complications using the matrix method. Initially my intuition was 
 
 Using complex analysis when studying Hamiltonians demonstrates that energy quantization has a topological interpretation. When we extend the parameters of a Hamiltonian into the complex domain, we find that the energy eigenvalues are all branches of a multivalued function, they are analytical continuations of one another and can be continuously deformed into one another by varying the parameters. Energy levels are in a one to one correspondence with the sheets of a Riemann surface. From the narrow perspective of real variables this topological interpretation is invisible\cite{BenderPT}.\\The behaviour of the eigenvalues of the Hamiltonian in equation (\ref{eq:18}) for the $\epsilon < 0$ region is a great demonstration of this. Note that there are $\epsilon$ values at which a minimum of two eigenvalues merge (the order of the degeneracy depends on the number of coalescent eigenvalues at that point\cite{BenderPT}\cite{Bender2017}), at $\epsilon = -1$ both Figure~\ref{fig:Benders} on page~\pageref{fig:Benders}, and my own renditions in sections \ref{PT broken} and \ref{Final} display an infinite-order exceptional point.\\\\
 
-\section{Experimental consequences of non-Hermitian degeneracies}\label{Experimental}
-
+\subsection{Experimental consequences of non-Hermitian degeneracies}\label{Experimental}
 Energy levels follow closed paths in the complex energy plane, however if the closed path encircles an \textbf{exceptional point} (branch-point singularity), the energy levels exchange their identities because they are analytic continuations of one another\cite{BenderPT}\cite{Bender2017}. This phenomenon is called level crossing. Interestingly, it is possible to vary the parameters of a Hamiltonian in laboratory experiments and thus to observe experimentally the effect of encircling exceptional points\cite{Bender2017}. An example of this kind of experimental non-Hermitian degeneracy manipulation can be found in in reference \cite{Ostrovskaya} by Gao et al (2015).\\\\
 
-Finally, I have already explained that when a non-Hermitian Hamiltonian satisfies unbroken \PT-symmetry the energy spectrum of the Hamiltonian in question has all real eigenvalues.
-Does this mean that the Hamiltonian I studied can be used to describe actual physics? The short answer is yes. The long answer requires a lot more investigative workfrom my part. Starting with the definition of a new non-trivial linear operator known as the \emph{C} operator. However, this topic was beyond my research at this time. 
+\section{Final remarks}\label{Future}
+
+I have already explained that when a non-Hermitian Hamiltonian satisfies unbroken \PT-symmetry the energy spectrum of the Hamiltonian in question has all real eigenvalues. \emph{Does this mean that the Hamiltonian I studied can be used to describe actual physics?} The short answer is \textbf{yes}. The long answer requires that we discover an appropriate inner product determined by the \PT-symmetric non-Hermitian Hamiltonian in question. In Bender's words: ``\PT-symmetric quantum mechanics is kind of a \emph{bootstrap} theory in the sense that the Hamiltonian operator $\hat{H}$ chooses the Hilbert space (and associated inner product) in which it prefers to live''\cite{BenderPT}.
+
+\subsection{Orthogonality of eigenfunctions}\label{Orthogonal}
+A pair of vectors may be orthogonal with respect to one inner product but not respect to another. In the standard formalism of quantum mechanics inner products are assumed to satisfy conjugate transposition and bi-linearity. Bi-linearity means that for any vectors $u, v$ in a vector space, $u, v$ must satisfy\cite{Jones-Smith} 
+\begin{equation}
+\begin{split}
+&(i)\ (u, v + w) = (u, v) + (u, w) \mathrm{\ and\ } (u + v, w) = (u, w) + (v, w),\\
+&(ii)\ (u, cv) = c(u, v) \mathrm{\ where\ } c \in \mathds{R},\\
+&(iii)\ (cu, v) = c^*(u, v).
+\end{split}
+\end{equation}
+It is also required that the inner product of a vector with itself be positive,
+and be zero in the case that one of the vectors is the zero vector. Such inner-products are called positive definite\cite{Jones-Smith}.
+If we make an educated guess for the form of the inner product based on the role of \PP\ and \TT\ operators in the non-Hermitian formalism of quantum mechanics our guessed inner product might look something like this
+\begin{equation}
+(u, v) \equiv \int_C dx [u(x)]^{PT} v(x) = \int_C dx [u(-x)]^*v(x),
+\end{equation}
+where $C$ is a contour that begins and terminates in the \emph{Stokes wedges} used to impose the boundary conditions of our eigenvalue equation. However with this definition we obtain some negative-norm states, deeming our guess inadequate for use in quantum theory\cite{BenderPT}\cite{Jones-Smith}\cite{Moiseyev}.\\
+An inner product that results in positive norm states for unbroken \PT-symmetric non-Hermitian Hamiltonians can be found, but it requires that we define a new non-trivial linear operator known as the \emph{C} operator. However, this topic was beyond my research at this time.\\\\
+I conclude this very brief introduction of \PT-symmetric quantum mechanics by reiterating that \PT-symmetric quantum mechanics is a rapidly evolving field that shows great promise as an expansion of what is considered to be ``the most reliable theory ever devised by humankind''.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
