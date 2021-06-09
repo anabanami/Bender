@@ -204,7 +204,7 @@ def figure_final_form():
         sorted_eigenvalues = sorted(positive_evals, key=lambda x: np.real(x))
         sorted_eigenvalues = sorted_eigenvalues[:11]
 
-        ϵ_list = np.full(len(sorted_eigenvalues), ϵ)
+        # ϵ_list = np.full(len(sorted_eigenvalues), ϵ)
 
         # mask_imag = 1e-6 < abs(np.imag(sorted_eigenvalues)) # MARK OR UNMARK
         # plt.plot(
@@ -216,14 +216,14 @@ def figure_final_form():
         #     markersize=1,
         # )
 
-        plt.plot(
-            ϵ_list,
-            np.real(sorted_eigenvalues),
-            marker='.',
-            linestyle='None',
-            color='k',
-            markersize=2.5,
-        )
+        # plt.plot(
+        #     ϵ_list,
+        #     np.real(sorted_eigenvalues),
+        #     marker='.',
+        #     linestyle='None',
+        #     color='k',
+        #     markersize=2.5,
+        # )
 
         # mask_real = 1e-6 < abs(np.imag(sorted_eigenvalues))# MARK OR UNMARK
         # plt.plot(
@@ -236,16 +236,16 @@ def figure_final_form():
         # )
 
     # # full figure # MARK OR UNMARK
-    plt.axis(xmin=-1, xmax=3, ymin=0, ymax=20)
-    plt.axvline(0, color='limegreen', linestyle=':', label="PT-symmetry breaking")
-    plt.legend()
+    # plt.axis(xmin=-1, xmax=3, ymin=0, ymax=20)
+    # plt.axvline(0, color='limegreen', linestyle=':', label="PT-symmetry breaking")
+    # plt.legend()
 
-    # # only broken symmetry region # MARK OR UNMARK
-    # plt.axis(xmin=-1, xmax=0, ymin=-2, ymax=12)
-    # plt.axhline(0, color='grey', linestyle='-')
+    # # # only broken symmetry region # MARK OR UNMARK
+    # # plt.axis(xmin=-1, xmax=0, ymin=-2, ymax=12)
+    # # plt.axhline(0, color='grey', linestyle='-')
     
-    plt.xlabel("ϵ")
-    plt.ylabel("E")
+    # plt.xlabel("ϵ")
+    # plt.ylabel("E")
     # plt.savefig("NHH_eigenvalues.png") # MARK OR UNMARK
     # plt.show()
     return np.array(eigenvectors_list)
@@ -282,40 +282,47 @@ coefficients = figure_final_form()
 # epsilons = np.linspace(-1.0, 0, N)
 # xs = np.linspace(-20, 20, 1024)
 # spatial_wavefunctions(N, xs, epsilons)
-# #################another one ###############################################
 
-def spatial_wavefunctions2(N, x, epsilons):
+# ################# another one ###############################################
+def spatial_wavefunctions_orthogonality_check(N, x, epsilons):
     x[x == 0] = 1e-200
-    PSI_ns = []
-    for n in range(N):
-        psi_n = cpsi_blank(n, x)
-        PSI_ns.append(psi_n)
-    PSI_ns = np.array(PSI_ns)
-    np.save(f"PSI_ns.npy", PSI_ns)
+    delta_x = x[1]-x[0]
+    PSI_ns = np.load("PSI_ns.npy")
 
     eigenstates = []
     for i, ϵ in enumerate(epsilons):
-        if i != 0:
+        if i != 30:
             continue
+        # if i != 60:
+        #     continue
         c = coefficients[i]
         for j in range(N):  # for each eigenvector
             d = c[:, j]
             psi_jx = np.zeros(x.shape, complex)
+
             for n in range(N):  # for each H.O. basis vector
                 psi_jx += d[n] * PSI_ns[n]
+
+            if j == 39:
+                psi_39 = psi_jx
+            if j == 40:
+                psi_40 = psi_jx
+
             plt.plot(x, abs(psi_jx) ** 2)
             print(f"saving {ϵ = }, {j = }")
-            plt.savefig(f"some_wavefunctions_-1/wavefunction_{ϵ}_{j:03d}.png")
+            plt.savefig(f"some_wavefunctions_-0.7/wavefunction_{ϵ}_{j:03d}.png")
+            # plt.savefig(f"some_wavefunctions_-0.4/wavefunction_{ϵ}_{j:03d}.png")
             plt.clf()
             eigenstates.append(psi_jx)
+        print(np.vdot(psi_39, psi_40) * delta_x)
+    np.save(f'eigenstates-0.7.npy', np.array(eigenstates))
+    # np.save(f'eigenstates-0.4.npy', np.array(eigenstates))
+
 
 plt.clf()
 N = 100
-# epsilons = [-0.4]
 xs = np.linspace(-20, 20, 2048)
-spatial_wavefunctions2(N, xs, epsilons)
-
-
+spatial_wavefunctions_orthogonality_check(N, xs, epsilons)
 
 ####################### Eigenvectors plot ##################################
 
@@ -365,23 +372,23 @@ spatial_wavefunctions2(N, xs, epsilons)
 # ######################### WKB TEST 1 #####################################
 
 ########################### WKB TEST 2 #####################################
-# ITERATIVE approach 1 for ϵ = 1
-Energies_1 = []
-for n in range(10):
-  E = complex_fsolve(error, E1, args=(1, n))
-  Energies_1.append(E)
+# # ITERATIVE approach 1 for ϵ = 1
+# Energies_1 = []
+# for n in range(10):
+#   E = complex_fsolve(error, E1, args=(1, n))
+#   Energies_1.append(E)
 
-# comparison to WKB and RK reported in Bender
-n = range(10)
-E_RK= [1.1563, 4.1093, 7.5623, 11.3144, 15.2916, 19.4515, 23.7667, 28.2175, 32.7891, 37.4698]
-E_WKB = [1.0943, 4.0895, 7.5489, 11.3043, 15.2832, 19.4444, 23.7603, 28.2120, 32.7841, 37.4653]
-plt.plot(n, Energies_1 , label="my calculated energies")
-plt.plot(n, E_RK , label=r"$E_{RK}$")
-plt.plot(n, E_WKB , label=r"$E_{WKB}$")
-plt.legend()
-plt.xlabel("n")
-plt.ylabel("E")
-plt.show()
+# # comparison to WKB and RK reported in Bender
+# n = range(10)
+# E_RK= [1.1563, 4.1093, 7.5623, 11.3144, 15.2916, 19.4515, 23.7667, 28.2175, 32.7891, 37.4698]
+# E_WKB = [1.0943, 4.0895, 7.5489, 11.3043, 15.2832, 19.4444, 23.7603, 28.2120, 32.7841, 37.4653]
+# plt.plot(n, Energies_1 , label="my calculated energies")
+# plt.plot(n, E_RK , label=r"$E_{RK}$")
+# plt.plot(n, E_WKB , label=r"$E_{WKB}$")
+# plt.legend()
+# plt.xlabel("n")
+# plt.ylabel("E")
+# plt.show()
 ########################## WKB TEST 2 #####################################
 
 ######################## WKB unbroken region ##############################
