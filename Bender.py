@@ -365,23 +365,23 @@ spatial_wavefunctions2(N, xs, epsilons)
 # ######################### WKB TEST 1 #####################################
 
 ########################### WKB TEST 2 #####################################
-# # ITERATIVE approach 1 for ϵ = 1
-# Energies_1 = []
-# for n in range(10):
-#   E = complex_fsolve(error, E1, args=(1, n))
-#   Energies_1.append(E)
+# ITERATIVE approach 1 for ϵ = 1
+Energies_1 = []
+for n in range(10):
+  E = complex_fsolve(error, E1, args=(1, n))
+  Energies_1.append(E)
 
-# # comparison to WKB and RK reported in Bender
-# n = range(10)
-# E_RK= [1.1563, 4.1093, 7.5623, 11.3144, 15.2916, 19.4515, 23.7667, 28.2175, 32.7891, 37.4698]
-# E_WKB = [1.0943, 4.0895, 7.5489, 11.3043, 15.2832, 19.4444, 23.7603, 28.2120, 32.7841, 37.4653]
-# plt.plot(n, Energies_1 , label="my calculated energies")
-# plt.plot(n, E_RK , label=r"$E_{RK}$")
-# plt.plot(n, E_WKB , label=r"$E_{WKB}$")
-# plt.legend()
-# plt.xlabel("n")
-# plt.ylabel("E")
-# plt.show()
+# comparison to WKB and RK reported in Bender
+n = range(10)
+E_RK= [1.1563, 4.1093, 7.5623, 11.3144, 15.2916, 19.4515, 23.7667, 28.2175, 32.7891, 37.4698]
+E_WKB = [1.0943, 4.0895, 7.5489, 11.3043, 15.2832, 19.4444, 23.7603, 28.2120, 32.7841, 37.4653]
+plt.plot(n, Energies_1 , label="my calculated energies")
+plt.plot(n, E_RK , label=r"$E_{RK}$")
+plt.plot(n, E_WKB , label=r"$E_{WKB}$")
+plt.legend()
+plt.xlabel("n")
+plt.ylabel("E")
+plt.show()
 ########################## WKB TEST 2 #####################################
 
 ######################## WKB unbroken region ##############################
